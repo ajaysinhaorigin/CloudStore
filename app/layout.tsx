@@ -9,8 +9,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "CloudStore",
-  description: "CloudStore - The Best Cloud Storage platform",
+  title: "CloudStore - The Best Cloud Storage platform",
+  description: "The Best Cloud Storage platform",
 };
 
 export default function RootLayout({
