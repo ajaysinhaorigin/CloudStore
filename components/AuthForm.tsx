@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ const AuthForm = ({ type }: Props) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    console.log('values', values);
     setIsLoading(true);
     setErrorMessage("");
 
@@ -151,9 +151,9 @@ const AuthForm = ({ type }: Props) => {
       </Form>
 
       {/* OTP VERIFICATION */}
-      {
-        accountId && (<OTPModal email={form.getValues("email")} accountId={accountId}/>)
-      }
+      {accountId && (
+        <OTPModal email={form.getValues("email")} accountId={accountId} />
+      )}
     </>
   );
 };
