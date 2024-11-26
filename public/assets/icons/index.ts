@@ -1,6 +1,35 @@
 import Logo from "./logo.svg";
 import CircularLogo from "./circular-logo.svg";
-
 import Loader from "./loader.svg";
+import CloseDark from "./close-dark.svg";
+import Logout from "./logout.svg";
+import LogoBrand from "./logo-brand.svg";
+import Dashboard from "./dashboard.svg";
+import Documents from "./documents.svg";
+import Images from "./images.svg";
+import Video from "./video.svg";
+import Others from "./others.svg";
+import Edit from "./edit.svg";
+import Info from "./info.svg";
+import Share from "./share.svg";
+import Download from "./download.svg";
+import Delete from "./delete.svg";
 
-export { Logo, CircularLogo, Loader };
+export {
+  Logo,
+  CircularLogo,
+  Loader,
+  CloseDark,
+  Logout,
+  LogoBrand,
+  Dashboard,
+  Documents,
+  Images,
+  Video,
+  Others,
+  Edit,
+  Info,
+  Share,
+  Download,
+  Delete,
+};

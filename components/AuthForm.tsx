@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Loader } from "@/public/assets";
 import Link from "next/link";
+import { createAccount } from "@/lib/actions/user.actions";
+import OTPModal from "./OTPModal";
 
 interface Props {
   type: "sign-in" | "sign-up";
@@ -36,6 +38,7 @@ const authFormSchema = (formType: "sign-in" | "sign-up") => {
 const AuthForm = ({ type }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [accountId, setAccountId] = useState(null);
 
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,8 +49,23 @@ const AuthForm = ({ type }: Props) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      const user = await createAccount({
+        fullName: values.fullName || "",
+        email: values.email,
+      });
+
+      setAccountId(user.accountId);
+    } catch (error) {
+      setErrorMessage("Failed to create account.Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <>
@@ -133,6 +151,9 @@ const AuthForm = ({ type }: Props) => {
       </Form>
 
       {/* OTP VERIFICATION */}
+      {
+        accountId && (<OTPModal email={form.getValues("email")} accountId={accountId}/>)
+      }
     </>
   );
 };

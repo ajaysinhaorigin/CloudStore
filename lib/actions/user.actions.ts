@@ -14,7 +14,7 @@ const getUserByEmail = async (email: string) => {
   const result = await databases.listDocuments(
     appwriteConfig.databaseId,
     appwriteConfig.usersCollectionId,
-    [Query.equal("email", [email])],
+    [Query.equal("email", [email])]
   );
 
   return result.total > 0 ? result.documents[0] : null;
@@ -61,20 +61,14 @@ export const createAccount = async ({
         email,
         avatar: avatarPlaceholderUrl,
         accountId,
-      },
+      }
     );
   }
 
   return parseStringify({ accountId });
 };
 
-export const verifySecret = async ({
-  accountId,
-  password,
-}: {
-  accountId: string;
-  password: string;
-}) => {
+export const verifySecret = async (accountId: string, password: string) => {
   try {
     const { account } = await createAdminClient();
 
@@ -102,7 +96,7 @@ export const getCurrentUser = async () => {
     const user = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
-      [Query.equal("accountId", result.$id)],
+      [Query.equal("accountId", result.$id)]
     );
 
     if (user.total <= 0) return null;

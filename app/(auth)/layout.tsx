@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Image from "next/image";
-import { CircularLogo, Files, Logo } from "@/public/assets";
+import { Files, Logo, LogoBrand } from "@/public/assets";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -39,13 +39,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <section className="flex flex-1 flex-col items-center bg-white p-4 py-10 lg:justify-center lg:p-10 lg:py-0">
         <div className="mb-16 lg:hidden  flex items-center space-x-3">
           <Image
-            src={CircularLogo}
+            src={LogoBrand}
             alt="logo"
-            width={68}
-            height={68}
+            width={56}
+            height={56}
             className="h-auto"
           />
-          <h1 className="text-[28px] leading-[42px] font-medium text-brand">
+          <h1 className="text-[28px] leading-[36px] font-medium text-brand">
             CloudStore
           </h1>
         </div>
