@@ -18,7 +18,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Loader } from "@/public/assets";
 import Link from "next/link";
-import { createAccount } from "@/lib/actions/user.actions";
+import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OTPModal from "./OTPModal";
 
 interface Props {
@@ -50,15 +50,17 @@ const AuthForm = ({ type }: Props) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('values', values);
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      const user = await createAccount({
-        fullName: values.fullName || "",
-        email: values.email,
-      });
+      const user =
+        type === "sign-in"
+          ? await signInUser({ email: values.email })
+          : await createAccount({
+              fullName: values.fullName || "",
+              email: values.email,
+            });
 
       setAccountId(user.accountId);
     } catch (error) {

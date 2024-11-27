@@ -14,6 +14,10 @@ import Info from "./info.svg";
 import Share from "./share.svg";
 import Download from "./download.svg";
 import Delete from "./delete.svg";
+import Menu from "./menu.svg";
+import Upload from './upload.svg'
+import FileLoader from './file-loader.gif'
+import Remove from './remove.svg'
 
 export {
   Logo,
@@ -32,4 +36,8 @@ export {
   Share,
   Download,
   Delete,
+  Menu,
+  Upload,
+  FileLoader,
+  Remove,
 };
