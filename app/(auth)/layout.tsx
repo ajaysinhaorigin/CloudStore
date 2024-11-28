@@ -1,8 +1,11 @@
 import { ReactNode } from "react";
 import Image from "next/image";
 import { Files, Logo, LogoBrand } from "@/public/assets";
+import connectDB from "@/lib/dbConnection";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = async ({ children }: { children: ReactNode }) => {
+  await connectDB();
+  console.log(process.env.NEXT_PUBLIC_MONGODB_URI);
   return (
     <div className="flex min-h-screen">
       <section className="justify-center hidden w-1/2 items-center bg-brand p-10 lg:flex xl:w-2/5">

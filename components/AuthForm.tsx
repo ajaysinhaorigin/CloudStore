@@ -20,6 +20,7 @@ import { Loader } from "@/public/assets";
 import Link from "next/link";
 import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OTPModal from "./OTPModal";
+import axios from "axios";
 
 interface Props {
   type: "sign-in" | "sign-up";
@@ -54,20 +55,30 @@ const AuthForm = ({ type }: Props) => {
     setErrorMessage("");
 
     try {
-      const user =
-        type === "sign-in"
-          ? await signInUser({ email: values.email })
-          : await createAccount({
-              fullName: values.fullName || "",
-              email: values.email,
-            });
-
-      setAccountId(user.accountId);
+      const user = await axios.post(
+        "http://localhost:3000/api/user/sign-up",
+        values
+      );
+      console.log("user", user);
     } catch (error) {
-      setErrorMessage("Failed to create account.Please try again.");
-    } finally {
-      setIsLoading(false);
+      console.log("error", error);
     }
+
+    // try {
+    //   const user =
+    //     type === "sign-in"
+    //       ? await signInUser({ email: values.email })
+    //       : await createAccount({
+    //           fullName: values.fullName || "",
+    //           email: values.email,
+    //         });
+
+    //   setAccountId(user.accountId);
+    // } catch (error) {
+    //   setErrorMessage("Failed to create account.Please try again.");
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
   return (
     <>
