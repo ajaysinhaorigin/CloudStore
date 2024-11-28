@@ -1,5 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import User from "./models/user.model";
+import { Resend } from "resend";
+import EmailTemplate from "@/components/EmailTemplate";
+
+const resend = new Resend("re_VmPswVAn_KYkqhkooStWJ76iCfqoMaJts");
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -232,4 +237,57 @@ export const getFileTypesParams = (type: string) => {
     default:
       return ["document"];
   }
+};
+
+// ================User auth utils===============
+
+export const generateAccessAndRefreshToken = async (userId: string) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        message:
+          "Something went wrong while generating refresh and access token",
+      }),
+      {
+        status: 500,
+      }
+    );
+  }
+};
+
+const generateOtp = () => {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+  const expiration = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 5 minutes
+  return { otp, expiration };
+};
+
+const sendEmailOTP = async (email: string) => {
+  const { otp, expiration } = generateOtp();
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Acme <onboarding@resend.dev>",
+      to: ["ajaysinhaa09@gmail.com"],
+      subject: "Hello there, Welcome to Resend!",
+      react: EmailTemplate({ firstName: "John", otp }),
+    });
+
+    return data ? { otp, expiration } : null;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const utils = {
+  generateAccessAndRefreshToken,
+  sendEmailOTP,
 };
