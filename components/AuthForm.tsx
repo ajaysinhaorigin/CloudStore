@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,9 +17,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { Loader } from "@/public/assets";
 import Link from "next/link";
-import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OTPModal from "./OTPModal";
-import axios from "axios";
+import { createHttpClient } from "@/tools/httpClient";
+import { apiUrls } from "@/tools/apiUrls";
 
 interface Props {
   type: "sign-in" | "sign-up";
@@ -53,32 +52,21 @@ const AuthForm = ({ type }: Props) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setErrorMessage("");
+    const httpClient = createHttpClient();
 
     try {
-      const user = await axios.post(
-        "http://localhost:3000/api/user/sign-up",
-        values
-      );
-      console.log("user", user);
+      const user =
+        type === "sign-up"
+          ? await httpClient.post(apiUrls.signup, values)
+          : await httpClient.post(apiUrls.signin, {
+              email: values.email,
+            });
+
+      console.log("user", user.data);
+      setAccountId(user.data.code);
     } catch (error) {
       console.log("error", error);
     }
-
-    // try {
-    //   const user =
-    //     type === "sign-in"
-    //       ? await signInUser({ email: values.email })
-    //       : await createAccount({
-    //           fullName: values.fullName || "",
-    //           email: values.email,
-    //         });
-
-    //   setAccountId(user.accountId);
-    // } catch (error) {
-    //   setErrorMessage("Failed to create account.Please try again.");
-    // } finally {
-    //   setIsLoading(false);
-    // }
   };
   return (
     <>
