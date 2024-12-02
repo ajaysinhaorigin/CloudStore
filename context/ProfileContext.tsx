@@ -34,7 +34,7 @@ export const ProfileProvider = ({
     try {
       const user = await httpClient.get(apiUrls.profile);
       console.log("user", user);
-      setProfile(user.data);
+      setProfile(user.data.user);
     } catch (error) {
       console.log("error", error);
     }

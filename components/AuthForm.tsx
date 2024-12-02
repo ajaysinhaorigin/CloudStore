@@ -62,7 +62,7 @@ const AuthForm = ({ type }: Props) => {
               email: values.email,
             });
 
-      console.log("user", user.data);
+      console.log("user --", user.data.code);
       setAccountId(user.data.code);
     } catch (error) {
       console.log("error", error);

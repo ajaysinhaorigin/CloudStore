@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import FileUploader from "@/components/FileUploader";
 import { signOutUser } from "@/lib/actions/user.actions";
 import { LogoBrand, Logout, Menu } from "@/public/assets";
+import { useProfileContext } from "@/context/ProfileContext";
 
 interface Props {
   $id: string;
@@ -26,17 +27,24 @@ interface Props {
   email: string;
 }
 
-const MobileNavigation = ({
-  $id: ownerId,
-  accountId,
-  fullName,
-  avatar,
-  email,
-}: Props) => {
+const MobileNavigation = (
+  {
+    // $id: ownerId,
+    // accountId,
+    // fullName,
+    // avatar,
+    // email,
+  }
+) => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  return ( 
+  const {
+    profile: { fullName, avatar, email, $id: ownerId },
+  } = useProfileContext();
+  console.log("profile", fullName, avatar, email);
+
+  return (
     <header className="mobile-header">
       <div className="flex items-center space-x-3">
         <Image
@@ -53,12 +61,7 @@ const MobileNavigation = ({
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger>
-          <Image
-            src={Menu}
-            alt="Search"
-            width={30}
-            height={30}
-          />
+          <Image src={Menu} alt="Search" width={30} height={30} />
         </SheetTrigger>
         <SheetContent className="shad-sheet h-screen px-3">
           <SheetTitle>
@@ -108,18 +111,13 @@ const MobileNavigation = ({
           <Separator className="my-5 bg-light-200/20" />
 
           <div className="flex flex-col justify-between gap-5 pb-5">
-            <FileUploader ownerId={ownerId} accountId={accountId} />
+            <FileUploader ownerId={ownerId} accountId={"123"} />
             <Button
               type="submit"
               className="mobile-sign-out-button"
               onClick={async () => await signOutUser()}
             >
-              <Image
-                src={Logout}
-                alt="logo"
-                width={24}
-                height={24}
-              />
+              <Image src={Logout} alt="logo" width={24} height={24} />
               <p>Logout</p>
             </Button>
           </div>

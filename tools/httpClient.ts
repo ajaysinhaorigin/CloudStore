@@ -1,13 +1,13 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 import { apiUrls } from "./apiUrls";
+import { localStorageService } from "@/services/LocalStorage.service";
 
 type Body = object | string | number;
 
-export function createHttpClient(
-  accessToken?: string,
-  params?: AxiosRequestConfig
-) {
+export function createHttpClient(params?: AxiosRequestConfig) {
   // Create an Axios instance
+  const accessToken = localStorageService.getAccessToken();
+  console.log("accessToken ---", accessToken);
   const httpClient: AxiosInstance = axios.create({
     baseURL: apiUrls.baseUrl,
     headers: {

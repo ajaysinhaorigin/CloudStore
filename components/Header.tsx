@@ -1,27 +1,35 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Logout } from "@/public/assets";
 import Search from "./Search";
 import FileUploader from "./FileUploader";
 import { signOutUser } from "@/lib/actions/user.actions";
+import { useProfileContext } from "@/context/ProfileContext";
 
 interface Props {
   userId: string;
   accountId: string;
 }
 
-const Header = ({ userId, accountId }: Props) => {
+const Header = () => {
+  const {
+    profile: { fullName, avatar, email, $id: userId },
+  } = useProfileContext();
+  console.log("profile", fullName, avatar, email);
+
   return (
     <header className="header">
       <Search />
       <div className="header-wrapper">
-        <FileUploader ownerId={userId} accountId={accountId} />
+        <FileUploader ownerId={userId} accountId={"123"} />
         <form
-          action={async () => {
-            "use server";
+          // action={async () => {
+          //   "use server";
 
-            await signOutUser();
-          }}
+          //   await signOutUser();
+          // }}
         >
           <Button type="submit" className="sign-out-button">
             <Image
