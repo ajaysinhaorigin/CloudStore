@@ -241,6 +241,29 @@ export const getFileTypesParams = (type: string) => {
 
 // ================User auth utils===============
 
+// utils/responseHelper.js
+
+export function responseHandler({
+  message = "",
+  status,
+  success = true,
+  data = {},
+}: {
+  message: string;
+  status: number;
+  success?: boolean;
+  data?: any;
+}) {
+  return new Response(
+    JSON.stringify({
+      message,
+      success,
+      ...data,
+    }),
+    { status }
+  );
+}
+
 export const generateAccessAndRefreshToken = async (userId: string) => {
   try {
     const user = await User.findById(userId);
@@ -288,6 +311,7 @@ const sendEmailOTP = async (email: string) => {
 };
 
 export const utils = {
+  responseHandler,
   generateAccessAndRefreshToken,
   sendEmailOTP,
 };

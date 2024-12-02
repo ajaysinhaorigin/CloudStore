@@ -106,6 +106,7 @@ export const getCurrentUser = async () => {
     console.log(error);
   }
 };
+
 export const signOutUser = async () => {
   const { account } = await createSessionClient();
 
@@ -118,7 +119,7 @@ export const signOutUser = async () => {
     redirect("/sign-in");
   }
 };
- 
+
 export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);

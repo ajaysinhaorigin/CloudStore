@@ -1,5 +1,4 @@
 "use client";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +18,10 @@ import Image from "next/image";
 import { MouseEvent, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { sendEmailOTP, verifySecret } from "@/lib/actions/user.actions";
+import { sendEmailOTP } from "@/lib/actions/user.actions";
+import axios from "axios";
+import { createHttpClient } from "@/tools/httpClient";
+import { localStorageService } from "@/services/LocalStorage.service";
 
 interface Props {
   email: string;
@@ -36,10 +38,20 @@ const OTPModal = ({ email, accountId }: Props) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const sessionId = await verifySecret(accountId as string, password);
+    const httpClient = createHttpClient();
 
-      if (sessionId) {
+    try {
+      //   const sessionId = await verifySecret(accountId as string, password);
+      const session = await axios.post(
+        "http://localhost:3000/api/user/otp-verification",
+        {
+          email: "test@gmail.com",
+          code: password,
+        }
+      );
+      console.log("session", session);
+      if (session) {
+        localStorageService.setAccessToken(session.data.accessToken);
         router.push("/");
       }
     } catch (error) {
@@ -51,7 +63,7 @@ const OTPModal = ({ email, accountId }: Props) => {
 
   const onResendOTP = async () => {
     try {
-        await sendEmailOTP({ email });
+      await sendEmailOTP({ email });
     } catch (error) {
       console.log("Failed to send OTP", error);
     }
