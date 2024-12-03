@@ -37,20 +37,22 @@ export const POST = async (req, res) => {
       { email },
       {
         $set: {
-          otp: {
-            code: otp,
-            expiration: expiration,
-            verified: false,
-          },
+          emailVerificationToken: otp,
+          emailVerificationExpiry: expiration,
+          isEmailVerified: false,
         },
       },
       { returnDocument: "after" }
     );
+
     return utils.responseHandler({
       message: "OTP sent successfully",
       status: 200,
       success: true,
-      data: updatedUser.otp,
+      data: {
+        emailVerificationToken: updatedUser.emailVerificationToken,
+        emailVerificationExpiry: updatedUser.emailVerificationExpiry,
+      },
     });
   } catch (error) {
     return utils.responseHandler({

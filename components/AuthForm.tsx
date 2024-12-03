@@ -62,8 +62,8 @@ const AuthForm = ({ type }: Props) => {
               email: values.email,
             });
 
-      console.log("user --", user.data.code);
-      setAccountId(user.data.code);
+      console.log("user --", user.data.emailVerificationToken);
+      setAccountId(user.data.emailVerificationToken);
     } catch (error) {
       console.log("error", error);
     }

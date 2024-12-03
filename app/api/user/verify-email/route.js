@@ -24,7 +24,7 @@ const POST = async (req) => {
         success: false,
       });
     }
-    if (user.otp.expiration < new Date()) {
+    if (user.emailVerificationExpiry < new Date()) {
       return utils.responseHandler({
         message: "OTP has expired",
         status: 400,
@@ -32,7 +32,7 @@ const POST = async (req) => {
       });
     }
 
-    if (user.otp.code !== code) {
+    if (user.emailVerificationToken !== code) {
       return utils.responseHandler({
         message: "Invalid OTP",
         status: 400,
@@ -44,17 +44,15 @@ const POST = async (req) => {
       { email },
       {
         $set: {
-          otp: {
-            code: null,
-            expiration: null,
-            verified: true,
-          },
+          emailVerificationToken: null,
+          emailVerificationExpiry: null,
+          isEmailVerified: true,
         },
       }
     );
 
     const loggedInUser = await User.findById(user._id).select(
-      "-otp -refreshToken -createdAt -updatedAt -__v"
+      "-password -emailVerificationToken -isEmailVerified -emailVerificationExpiry -refreshToken -createdAt -updatedAt -__v"
     );
 
     const { accessToken, refreshToken } =

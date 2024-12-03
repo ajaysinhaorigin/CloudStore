@@ -44,11 +44,9 @@ export const POST = async (req) => {
       fullName,
       email,
       avatar: avatarPlaceholderUrl,
-      otp: {
-        code: otp,
-        expiration,
-        verified: false,
-      },
+      emailVerificationToken: otp,
+      emailVerificationExpiry: expiration,
+      isEmailVerified: false,
     });
 
     const createdUser = await User.findById(user._id).select("-refreshToken");
@@ -66,10 +64,11 @@ export const POST = async (req) => {
       message: "OTP sent successfully",
       status: 200,
       success: true,
-      data: createdUser.otp,
+      data: {
+        emailVerificationToken: createdUser.emailVerificationToken,
+        emailVerificationExpiry: createdUser.emailVerificationExpiry,
+      },
     });
-
-    // return new Response(JSON.stringify(createdUser.otp), { status: 200 });
   } catch (error) {
     return utils.responseHandler({
       message: error.message,

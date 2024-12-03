@@ -16,10 +16,15 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
-    otp: {
-      code: { type: String }, // The actual OTP
-      expiration: { type: Date }, // Expiry time for the OTP
-      verified: { type: Boolean, default: false }, // Status of OTP verification
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpiry: {
+      type: Date,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     },
     refreshToken: {
       type: String,
