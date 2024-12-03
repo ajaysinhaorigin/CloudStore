@@ -42,7 +42,7 @@ const OTPModal = ({ email, accountId }: Props) => {
 
     try {
       const session = await axios.post(
-        "http://localhost:3000/api/user/otp-verification",
+        "http://localhost:3000/api/user/verify-email",
         {
           email: "test@gmail.com",
           code: password,
@@ -51,6 +51,7 @@ const OTPModal = ({ email, accountId }: Props) => {
       console.log("session otp client response", session);
       if (session) {
         localStorageService.setAccessToken(session.data.accessToken);
+        localStorageService.setRefreshToken(session.data.refreshToken);
         router.push("/");
       }
     } catch (error) {
