@@ -1,7 +1,7 @@
 import { Models } from "node-appwrite";
 import Thumbnail from "@/components/Thumbnail";
 import FormattedDateTime from "@/components/FormattedDateTime";
-import { convertFileSize, formatDateTime } from "@/lib/utils";
+import { convertFileSize, formatDateTime } from "@/lib/utils/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

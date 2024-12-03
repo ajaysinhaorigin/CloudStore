@@ -1,5 +1,5 @@
 import User from "../../../../lib/models/user.model";
-import { utils } from "../../../../lib/utils.ts";
+import { utils } from "../../../../lib/utils/server-utils";
 import { avatarPlaceholderUrl } from "@/constants";
 
 export const POST = async (req) => {
@@ -61,7 +61,7 @@ export const POST = async (req) => {
       });
     }
 
-    console.log("createdUser------", createdUser);
+    console.log("createdUser---", createdUser);
     return utils.responseHandler({
       message: "OTP sent successfully",
       status: 200,

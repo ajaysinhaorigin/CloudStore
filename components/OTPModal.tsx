@@ -41,7 +41,6 @@ const OTPModal = ({ email, accountId }: Props) => {
     const httpClient = createHttpClient();
 
     try {
-      //   const sessionId = await verifySecret(accountId as string, password);
       const session = await axios.post(
         "http://localhost:3000/api/user/otp-verification",
         {
@@ -49,7 +48,7 @@ const OTPModal = ({ email, accountId }: Props) => {
           code: password,
         }
       );
-      console.log("session", session);
+      console.log("session otp client response", session);
       if (session) {
         localStorageService.setAccessToken(session.data.accessToken);
         router.push("/");

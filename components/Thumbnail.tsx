@@ -1,4 +1,4 @@
-import { cn, getFileIcon } from "@/lib/utils";
+import { cn, getFileIcon } from "@/lib/utils/utils";
 import Image from "next/image";
 
 interface Props {

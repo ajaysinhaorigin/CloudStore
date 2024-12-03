@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 import { Separator } from "@radix-ui/react-separator";
 import { navItems } from "@/constants";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 import FileUploader from "@/components/FileUploader";
 import { signOutUser } from "@/lib/actions/user.actions";
@@ -42,7 +42,7 @@ const MobileNavigation = (
   const {
     profile: { fullName, avatar, email, $id: ownerId },
   } = useProfileContext();
-  console.log("profile", fullName, avatar, email);
+  console.log("MobileNavigation --fullName", fullName);
 
   return (
     <header className="mobile-header">

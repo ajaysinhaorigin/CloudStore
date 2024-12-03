@@ -4,10 +4,10 @@ import { localStorageService } from "@/services/LocalStorage.service";
 
 type Body = object | string | number;
 
+const getAccessToken = () => localStorageService.getAccessToken();
+
 export function createHttpClient(params?: AxiosRequestConfig) {
   // Create an Axios instance
-  const accessToken = localStorageService.getAccessToken();
-  console.log("accessToken ---", accessToken);
   const httpClient: AxiosInstance = axios.create({
     baseURL: apiUrls.baseUrl,
     headers: {
@@ -21,6 +21,7 @@ export function createHttpClient(params?: AxiosRequestConfig) {
   httpClient.interceptors.request.use(
     (config) => {
       // Add authorization or other headers if needed
+      const accessToken = getAccessToken();
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -29,7 +30,7 @@ export function createHttpClient(params?: AxiosRequestConfig) {
     (error) => Promise.reject(error)
   );
 
-  // Response interceptor
+  //   Response interceptor
   httpClient.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
