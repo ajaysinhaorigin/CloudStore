@@ -1,4 +1,4 @@
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils/utils";
 
 export const FormattedDateTime = ({
   date,

@@ -1,5 +1,5 @@
 import User from "../../../../lib/models/user.model";
-import { utils } from "../../../../lib/utils";
+import { utils } from "../../../../lib/utils/server-utils";
 
 export const POST = async (req, res) => {
   try {

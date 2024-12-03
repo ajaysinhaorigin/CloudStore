@@ -3,7 +3,7 @@
 import { MouseEvent, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
-import { cn, convertFileToUrl, getFileType } from "@/lib/utils";
+import { cn, convertFileToUrl, getFileType } from "@/lib/utils/utils";
 import Image from "next/image";
 import { FileLoader, Remove, Upload } from "@/public/assets";
 import Thumbnail from "./Thumbnail";

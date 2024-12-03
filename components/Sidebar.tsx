@@ -1,9 +1,8 @@
 "use client";
 import { avatarPlaceholderUrl, navItems } from "@/constants";
 import { useProfileContext } from "@/context/ProfileContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { Files2, LogoBrand } from "@/public/assets";
-import { apiUrls } from "@/tools/apiUrls";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,7 +12,7 @@ const Sidebar = () => {
   const {
     profile: { fullName, avatar, email },
   } = useProfileContext();
-  console.log("profile", fullName, avatar, email);
+  console.log("Sidebar --fullName", fullName);
 
   return (
     <aside className="sidebar">

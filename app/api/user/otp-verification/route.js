@@ -1,5 +1,5 @@
 import User from "../../../../lib/models/user.model";
-import { utils } from "../../../../lib/utils";
+import { utils } from "../../../../lib/utils/server-utils";
 import { cookies } from "next/headers";
 
 const POST = async (req) => {
@@ -16,7 +16,6 @@ const POST = async (req) => {
     }
 
     const user = await User.findOne({ email });
-    console.log("user", user);
 
     if (!user) {
       return utils.responseHandler({

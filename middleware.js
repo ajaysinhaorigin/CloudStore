@@ -7,8 +7,8 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   const accessToken = (await cookies()).get("accessToken");
   const isPublicRoute = publicRoutes.includes(pathname);
-  // console.log("accessToken", accessToken);
 
+  console.log("accessToken", accessToken);
   if (accessToken && accessToken?.value) {
     return isPublicRoute
       ? NextResponse.redirect(new URL("/", request.url))
