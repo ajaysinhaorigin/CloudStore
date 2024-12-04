@@ -1,11 +1,7 @@
+import { localStorageService } from "@/services/LocalStorage.service";
+import { apiUrls } from "@/tools/apiUrls";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import User from "../models/user.model";
-import { Resend } from "resend";
-import EmailTemplate from "@/components/EmailTemplate";
-import { NextResponse } from "next/server";
-
-const resend = new Resend("re_VmPswVAn_KYkqhkooStWJ76iCfqoMaJts");
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -238,4 +234,36 @@ export const getFileTypesParams = (type: string) => {
     default:
       return ["document"];
   }
+};
+
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorageService.getRefreshToken();
+    const response = await fetch(
+      `${apiUrls.baseUrl}${apiUrls.refreshAccessToken}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      }
+    );
+
+    if (!response || response.status !== 200) {
+      throw new Error("Failed to refresh token");
+    }
+
+    const data = await response.json();
+    localStorageService.setAccessToken(data.accessToken);
+    localStorageService.setRefreshToken(data.refreshToken);
+    return data;
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    return null;
+  }
+};
+
+export const utils = {
+  refreshAccessToken,
 };

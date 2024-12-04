@@ -25,8 +25,24 @@ export const POST = asyncHandler(
       sameSite: "strict",
     };
 
-    (await cookies()).clearCookie("accessToken", accessToken, options);
-    (await cookies()).clearCookie("refreshToken", refreshToken, options);
+    const cookieStore = await cookies();
+
+    // Setting cookies with expired maxAge to clear them
+    cookieStore.set("accessToken", "", {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 0,
+    });
+
+    cookieStore.set("refreshToken", "", {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 0,
+    });
 
     return utils.responseHandler({
       message: "User logged out Successfully",
