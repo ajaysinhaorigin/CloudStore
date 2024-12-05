@@ -251,6 +251,7 @@ const refreshAccessToken = async () => {
     );
 
     if (!response || response.status !== 200) {
+      localStorageService.clearLocalStorage();
       throw new Error("Failed to refresh token");
     }
 

@@ -44,6 +44,12 @@ const removeRefreshToken = () => {
   } catch (error) {}
 };
 
+const clearLocalStorage = () => {
+  try {
+    localStorage.clear();
+  } catch (error) {}
+};
+
 const localStorageService = {
   setAccessToken,
   getAccessToken,
@@ -51,6 +57,7 @@ const localStorageService = {
   setRefreshToken,
   getRefreshToken,
   removeRefreshToken,
+  clearLocalStorage,
 };
 
 export { localStorageService };

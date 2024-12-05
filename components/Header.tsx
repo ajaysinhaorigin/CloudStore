@@ -23,11 +23,8 @@ const Header = () => {
 
     try {
       const response = await httpClient.post(apiUrls.logout, {});
-      console.log("response", response);
-
       if (response && response.status === 200) {
-        localStorageService.removeAccessToken();
-        localStorageService.removeRefreshToken();
+        localStorageService.clearLocalStorage();
 
         router.push("/sign-in");
       }
