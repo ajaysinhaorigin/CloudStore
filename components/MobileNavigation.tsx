@@ -15,9 +15,12 @@ import Link from "next/link";
 import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 import FileUploader from "@/components/FileUploader";
-import { signOutUser } from "@/lib/actions/user.actions";
 import { LogoBrand, Logout, Menu } from "@/public/assets";
 import { useProfileContext } from "@/context/ProfileContext";
+import { createHttpClient } from "@/tools/httpClient";
+import { apiUrls } from "@/tools/apiUrls";
+import { localStorageService } from "@/services/LocalStorage.service";
+import { useRouter } from "next/navigation";
 
 interface Props {
   $id: string;
@@ -38,11 +41,27 @@ const MobileNavigation = (
 ) => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const {
     profile: { fullName, avatar, email, $id: ownerId },
   } = useProfileContext();
   console.log("MobileNavigation --fullName", fullName);
+
+  const onLogout = async () => {
+    const httpClient = createHttpClient();
+
+    try {
+      const response = await httpClient.post(apiUrls.logout, {});
+      if (response && response.status === 200) {
+        localStorageService.clearLocalStorage();
+
+        router.push("/sign-in");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   return (
     <header className="mobile-header">
@@ -115,7 +134,7 @@ const MobileNavigation = (
             <Button
               type="submit"
               className="mobile-sign-out-button"
-              onClick={async () => await signOutUser()}
+              onClick={onLogout}
             >
               <Image src={Logout} alt="logo" width={24} height={24} />
               <p>Logout</p>
