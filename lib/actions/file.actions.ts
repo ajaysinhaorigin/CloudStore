@@ -4,7 +4,11 @@ import { createAdminClient, createSessionClient } from "@/lib/appwrite";
 import { InputFile } from "node-appwrite/file";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { ID, Models, Query } from "node-appwrite";
-import { constructFileUrl, getFileType, parseStringify } from "@/lib/utils/utils";
+import {
+  constructFileUrl,
+  getFileType,
+  parseStringify,
+} from "@/lib/utils/utils";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 
@@ -24,11 +28,15 @@ export const uploadFile = async ({
   try {
     const inputFile = InputFile.fromBuffer(file, file.name);
 
+    console.log("inputFile", inputFile);
     const bucketFile = await storage.createFile(
       appwriteConfig.bucketId,
       ID.unique(),
       inputFile
     );
+
+    console.log("bucketFile", bucketFile);
+    console.log("url", constructFileUrl(bucketFile.$id));
 
     const fileDocument = {
       type: getFileType(bucketFile.name).type,
