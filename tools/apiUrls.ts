@@ -6,4 +6,5 @@ export const apiUrls = {
   profile: "/user/profile",
   logout: "/user/logout",
   refreshAccessToken: "/user/refresh-token",
+  uploadFile: "/file/upload",
 };

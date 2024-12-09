@@ -8,14 +8,24 @@ cloudinary.config({
   api_secret: mongodbConfig.cloudinaryApiSecret,
 });
 
-const uploadOnCloudinary = async (localFilePath: string) => {
+const uploadOnCloudinary = async (file: File) => {
   // Upload an image
   try {
-    if (!localFilePath) return null;
-    //upload the file on cloudinary
+    if (!file) return null;
 
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Extract the file name without extension
+    const originalFileName = file.name.replace(/\.[^/.]+$/, "");
+
+    // Convert to Base64
+    const base64Data = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+    //upload the file on cloudinary
+    const response = await cloudinary.uploader.upload(base64Data, {
       resource_type: "auto",
+      public_id: originalFileName,
       folder: "cloud-store",
     });
     // file has been uploaded successfull

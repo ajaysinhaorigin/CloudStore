@@ -11,6 +11,9 @@ import { usePathname } from "next/navigation";
 import { MAX_FILE_SIZE } from "@/constants";
 import { uploadFile } from "@/lib/actions/file.actions";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+import { createHttpClient } from "@/tools/httpClient";
+import { apiUrls } from "@/tools/apiUrls";
 
 interface Props {
   ownerId: string;
@@ -20,7 +23,7 @@ interface Props {
 
 const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const path = usePathname();
-    const { toast } = useToast();
+  const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
 
   const onDrop = useCallback(
@@ -44,15 +47,32 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
           });
         }
 
-        return uploadFile({ file, ownerId, accountId, path }).then(
-          (uploadedFile) => {
-            if (uploadedFile) {
-              setFiles((prevFiles) =>
-                prevFiles.filter((f) => f.name !== file.name)
-              );
-            }
-          }
-        );
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const httpClient = createHttpClient();
+        try {
+          const response = await httpClient.post(apiUrls.uploadFile, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          console.log(response.data);
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+        return true;
+
+        // return uploadFile({ file, ownerId, accountId, path }).then(
+        //   (uploadedFile) => {
+        //     if (uploadedFile) {
+        //       setFiles((prevFiles) =>
+        //         prevFiles.filter((f) => f.name !== file.name)
+        //       );
+        //     }
+        //   }
+        // );
       });
 
       await Promise.all(uploadPromises);
