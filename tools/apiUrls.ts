@@ -7,4 +7,5 @@ export const apiUrls = {
   logout: "/user/logout",
   refreshAccessToken: "/user/refresh-token",
   uploadFile: "/file/upload",
+  getFile: "/file",
 };

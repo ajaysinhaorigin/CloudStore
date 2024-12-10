@@ -12,7 +12,6 @@ const Sidebar = () => {
   const {
     profile: { fullName, avatar, email },
   } = useProfileContext();
-  console.log("Sidebar --fullName", fullName);
 
   return (
     <aside className="sidebar">

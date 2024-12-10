@@ -73,8 +73,27 @@ const sendEmailOTP = async (email: string) => {
   }
 };
 
+const clearCookies = (cookieStore: any) => {
+  cookieStore.set("accessToken", "", {
+    path: "/",
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 0,
+  });
+
+  cookieStore.set("refreshToken", "", {
+    path: "/",
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 0,
+  });
+};
+
 export const utils = {
   responseHandler,
   generateAccessAndRefreshToken,
   sendEmailOTP,
+  clearCookies,
 };

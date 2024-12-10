@@ -22,31 +22,14 @@ import { apiUrls } from "@/tools/apiUrls";
 import { localStorageService } from "@/services/LocalStorage.service";
 import { useRouter } from "next/navigation";
 
-interface Props {
-  $id: string;
-  accountId: string;
-  fullName: string;
-  avatar: string;
-  email: string;
-}
-
-const MobileNavigation = (
-  {
-    // $id: ownerId,
-    // accountId,
-    // fullName,
-    // avatar,
-    // email,
-  }
-) => {
+const MobileNavigation = ({}) => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   const {
-    profile: { fullName, avatar, email, $id: ownerId },
+    profile: { fullName, avatar, email },
   } = useProfileContext();
-  console.log("MobileNavigation --fullName", fullName);
 
   const onLogout = async () => {
     const httpClient = createHttpClient();
@@ -130,7 +113,7 @@ const MobileNavigation = (
           <Separator className="my-5 bg-light-200/20" />
 
           <div className="flex flex-col justify-between gap-5 pb-5">
-            <FileUploader ownerId={ownerId} accountId={"123"} />
+            <FileUploader />
             <Button
               type="submit"
               className="mobile-sign-out-button"
