@@ -20,7 +20,7 @@ const Page = () => {
   //   const searchText = ((await searchParams)?.query as string) || "";
   //   const sort = ((await searchParams)?.sort as string) || "";
 
-  //   const types = getFileTypesParams(type) as FileType[];
+  const types = getFileTypesParams(type as string) as FileType[];
 
   //   console.log({ types, searchText, sort });
   //   const files = await getFiles({ types, searchText, sort });
@@ -34,11 +34,11 @@ const Page = () => {
     const fetchFiles = async () => {
       try {
         setLoading(true);
-        const searchText = "example"; // Replace with dynamic value
-        const sort = "asc"; // Replace with dynamic value
+        const searchText = ""; // Replace with dynamic value
+        const sort = ""; // Replace with dynamic value
 
         const response = await fetch(
-          `http://localhost:3000/api/file/${type}?searchText=${searchText}&sort=${sort}`
+          `http://localhost:3000/api/file/${types}?searchText=${searchText}&sort=${sort}`
         );
 
         if (!response.ok) {
@@ -49,8 +49,8 @@ const Page = () => {
         console.log("API Response:", data);
 
         setFiles({
-          total: 0,
-          documents: [],
+          total: data.total,
+          documents: data.files,
         }); // Assuming `data` contains files in `data`
       } catch (error) {
         console.log("Error fetching files:", error);
@@ -63,8 +63,6 @@ const Page = () => {
   }, []);
 
   console.log("Files:", files);
-
-  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="page-container">
@@ -87,7 +85,7 @@ const Page = () => {
       {files.total > 0 ? (
         <section className="file-list">
           {files.documents.map((file: Models.Document) => (
-            <Card key={file.$id} file={file} />
+            <Card key={file._id} file={file} />
           ))}
         </section>
       ) : (
