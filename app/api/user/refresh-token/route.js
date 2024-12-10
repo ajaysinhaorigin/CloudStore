@@ -4,24 +4,7 @@ import User from "../../../../lib/models/user.model";
 import { asyncHandler } from "../../../../lib/utils/asyncHandler";
 import { utils } from "../../../../lib/utils/server-utils";
 import { mongodbConfig } from "../../../../lib/dbConnection/config";
-
-const clearCookies = (cookieStore) => {
-  cookieStore.set("accessToken", "", {
-    path: "/",
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 0,
-  });
-
-  cookieStore.set("refreshToken", "", {
-    path: "/",
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 0,
-  });
-};
+import connectDB from "../../../../lib/dbConnection";
 
 export const POST = asyncHandler(async (req, _) => {
   const incomingRefreshToken =
@@ -38,6 +21,8 @@ export const POST = asyncHandler(async (req, _) => {
   const cookieStore = await cookies();
 
   try {
+    await connectDB();
+
     const decodedToken = jwt.verify(
       incomingRefreshToken,
       mongodbConfig.refreshTokenSecret
@@ -54,7 +39,7 @@ export const POST = asyncHandler(async (req, _) => {
     }
 
     if (incomingRefreshToken !== user?.refreshToken) {
-      clearCookies(cookieStore);
+      utils.clearCookies(cookieStore);
       return utils.responseHandler({
         message: "Refresh token is expired or used",
         status: 401,
@@ -82,7 +67,7 @@ export const POST = asyncHandler(async (req, _) => {
       data: { accessToken, refreshToken },
     });
   } catch (error) {
-    clearCookies(cookieStore);
+    utils.clearCookies(cookieStore);
 
     return utils.responseHandler({
       message: "Something went wrong while refreshing access token!",

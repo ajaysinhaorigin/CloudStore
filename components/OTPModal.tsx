@@ -48,7 +48,6 @@ const OTPModal = ({ email, accountId }: Props) => {
           code: password,
         }
       );
-      console.log("session otp client response", session);
       if (session) {
         localStorageService.setAccessToken(session.data.accessToken);
         localStorageService.setRefreshToken(session.data.refreshToken);

@@ -1,9 +1,12 @@
 import User from "../../../../lib/models/user.model";
 import { utils } from "../../../../lib/utils/server-utils";
 import { cookies } from "next/headers";
+import connectDB from "../../../../lib/dbConnection";
 
 const POST = async (req) => {
   try {
+    await connectDB();
+
     const { email, code } = await req.json();
     const isFieldEmpty = [email, code].some((field) => field?.trim() === "");
 

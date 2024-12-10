@@ -1,6 +1,4 @@
-"use client";
-
-import { MouseEvent, useCallback, useState } from "react";
+import { MouseEvent, useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
 import { cn, convertFileToUrl, getFileType } from "@/lib/utils/utils";
@@ -9,28 +7,25 @@ import { FileLoader, Remove, Upload } from "@/public/assets";
 import Thumbnail from "./Thumbnail";
 import { usePathname } from "next/navigation";
 import { MAX_FILE_SIZE } from "@/constants";
-import { uploadFile } from "@/lib/actions/file.actions";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
 
 interface Props {
-  ownerId: string;
-  accountId: string;
   className?: string;
 }
 
-const FileUploader = ({ ownerId, accountId, className }: Props) => {
+const FileUploader = ({ className }: Props) => {
   const path = usePathname();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
+  const abortControllers = useRef(new Map<string, AbortController>());
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      setFiles(acceptedFiles);
+      setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
 
-      const uploadPromises = acceptedFiles.map(async (file) => {
+      acceptedFiles.forEach(async (file) => {
         if (file.size > MAX_FILE_SIZE) {
           setFiles((prevFiles) =>
             prevFiles.filter((f) => f.name !== file.name)
@@ -47,46 +42,59 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
           });
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const httpClient = createHttpClient();
-        try {
-          const response = await httpClient.post(apiUrls.uploadFile, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-          console.log(response.data);
-        } catch (error) {
-          console.error("Error uploading file:", error);
-        }
-        return true;
-
-        // return uploadFile({ file, ownerId, accountId, path }).then(
-        //   (uploadedFile) => {
-        //     if (uploadedFile) {
-        //       setFiles((prevFiles) =>
-        //         prevFiles.filter((f) => f.name !== file.name)
-        //       );
-        //     }
-        //   }
-        // );
+        await onUploadFile(file);
       });
-
-      await Promise.all(uploadPromises);
     },
-    [ownerId, accountId, path]
+    [path, files]
   );
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const onUploadFile = async (file: File) => {
+    const httpClient = createHttpClient();
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const abortController = new AbortController();
+    abortControllers.current.set(file.name, abortController);
+
+    try {
+      const response = await httpClient.post(apiUrls.uploadFile, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        signal: abortController.signal, // Use the signal from AbortController
+      });
+
+      abortControllers.current.delete(file.name);
+
+      if (response && response.status === 200) {
+        setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      }
+
+      console.log("response", response.data);
+      return response.data;
+    } catch (error) {
+      if (abortController.signal.aborted) {
+        console.log("Upload aborted:", file.name);
+      } else {
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
 
   const onRemoveFile = (
     e: MouseEvent<HTMLImageElement, globalThis.MouseEvent>,
     fileName: string
   ) => {
     e.stopPropagation();
+    const abortController = abortControllers.current.get(fileName);
+
+    if (abortController) {
+      abortController.abort(); // Cancel the upload
+      abortControllers.current.delete(fileName);
+    }
+
     setFiles((prevFiles) => prevFiles.filter((f) => f.name !== fileName));
   };
 
@@ -103,7 +111,6 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
 
           {files.map((file, index) => {
             const { type, extension } = getFileType(file.name);
-
             return (
               <li
                 key={`${index}-${file.name}`}

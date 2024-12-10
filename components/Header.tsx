@@ -16,8 +16,7 @@ const Header = () => {
   const {
     profile: { fullName, avatar, email, $id: userId },
   } = useProfileContext();
-  console.log("Header --fullName", fullName);
-
+  
   const onLogout = async () => {
     const httpClient = createHttpClient();
 
@@ -37,7 +36,7 @@ const Header = () => {
     <header className="header">
       <Search />
       <div className="header-wrapper">
-        <FileUploader ownerId={userId} accountId={"123"} />
+        <FileUploader />
         <Button type="submit" className="sign-out-button" onClick={onLogout}>
           <Image
             src={Logout}

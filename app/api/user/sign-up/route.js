@@ -1,9 +1,12 @@
 import User from "../../../../lib/models/user.model";
 import { utils } from "../../../../lib/utils/server-utils";
 import { avatarPlaceholderUrl } from "@/constants";
+import connectDB from "../../../../lib/dbConnection";
 
 export const POST = async (req) => {
   try {
+    await connectDB();
+
     const { fullName, email } = await req.json();
 
     const isFieldEmpty = [fullName, email].some(
@@ -59,7 +62,7 @@ export const POST = async (req) => {
       });
     }
 
-    console.log("createdUser---", createdUser);
+    console.log("createdUser --", createdUser);
     return utils.responseHandler({
       message: "OTP sent successfully",
       status: 200,
