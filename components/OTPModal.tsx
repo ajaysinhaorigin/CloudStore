@@ -19,16 +19,16 @@ import { MouseEvent, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { sendEmailOTP } from "@/lib/actions/user.actions";
-import axios from "axios";
 import { createHttpClient } from "@/tools/httpClient";
 import { localStorageService } from "@/services/LocalStorage.service";
+import { apiUrls } from "@/tools/apiUrls";
 
 interface Props {
   email: string;
   accountId: string | null;
 }
 
-const OTPModal = ({ email, accountId }: Props) => {
+const OTPModal = ({ email }: Props) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [password, setPassword] = useState("");
@@ -39,15 +39,12 @@ const OTPModal = ({ email, accountId }: Props) => {
     setIsLoading(true);
 
     const httpClient = createHttpClient();
-
     try {
-      const session = await axios.post(
-        "http://localhost:3000/api/user/verify-email",
-        {
-          email: "test@gmail.com",
-          code: password,
-        }
-      );
+      const session = await httpClient.post(apiUrls.verifyEmail, {
+        email,
+        code: password,
+      });
+
       if (session) {
         localStorageService.setAccessToken(session.data.accessToken);
         localStorageService.setRefreshToken(session.data.refreshToken);
