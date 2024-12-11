@@ -62,7 +62,6 @@ export const POST = async (req) => {
       });
     }
 
-    console.log("createdUser --", createdUser);
     return utils.responseHandler({
       message: "OTP sent successfully",
       status: 200,

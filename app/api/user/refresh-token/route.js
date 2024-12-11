@@ -7,6 +7,8 @@ import { mongodbConfig } from "../../../../lib/dbConnection/config";
 import connectDB from "../../../../lib/dbConnection";
 
 export const POST = asyncHandler(async (req, _) => {
+  const cookieStore = await cookies();
+  
   const incomingRefreshToken =
     req.cookies?.get("refreshToken")?.value || req.body.refreshToken;
 
@@ -17,8 +19,6 @@ export const POST = asyncHandler(async (req, _) => {
       success: false,
     });
   }
-
-  const cookieStore = await cookies();
 
   try {
     await connectDB();
