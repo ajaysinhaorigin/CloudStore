@@ -238,29 +238,23 @@ export const getFileTypesParams = (type: string) => {
 };
 
 const refreshAccessToken = async () => {
+  const httpClient = createHttpClient();
   try {
     const refreshToken = localStorageService.getRefreshToken();
-    const response = await fetch(
-      `${apiUrls.baseUrl}${apiUrls.refreshAccessToken}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      }
-    );
+    const response = await httpClient.post(apiUrls.refreshAccessToken, {
+      refreshToken,
+    });
 
     if (!response || response.status !== 200) {
       localStorageService.clearLocalStorage();
       throw new Error("Failed to refresh token");
     }
 
-    const data = await response.json();
-    localStorageService.setAccessToken(data.accessToken);
-    localStorageService.setRefreshToken(data.refreshToken);
-    return data;
+    localStorageService.setAccessToken(response.data.accessToken);
+    localStorageService.setRefreshToken(response.data.refreshToken);
+    return response.data;
   } catch (error) {
+    localStorageService.clearLocalStorage();
     console.log("Token refresh failed:", error);
     return null;
   }
@@ -269,32 +263,57 @@ const refreshAccessToken = async () => {
 const renameFile = async (id: string, name: string) => {
   const httpClient = createHttpClient();
   try {
-    const response = await httpClient.put(
-      `file/${id}/rename`,
-      { name },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await httpClient.put(`${apiUrls.getFile}/${id}/rename`, {
+      name,
+    });
     console.log("response", response);
+
+    if (response && response.status === 200) {
+      return response.data;
+    }
+    return null;
   } catch (error) {
     console.log("error at rename", error);
+    return null;
   }
 };
+
+const updateFileUsers = async (id: string, emails: string[]) => {
+  const httpClient = createHttpClient();
+  try {
+    const response = await httpClient.put(`${apiUrls.getFile}/${id}/share`, {
+      emails,
+    });
+    console.log("response", response);
+
+    if (response && response.status === 200) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.log("error at rename", error);
+    return null;
+  }
+};
+
 const deleteFile = async (id: string) => {
   const httpClient = createHttpClient();
   try {
-    const response = await httpClient.delete(`file/${id}/delete`);
-    console.log("response", response);
+    const response = await httpClient.delete(`${apiUrls.getFile}/${id}/delete`);
+
+    if (response && response.status === 200) {
+      return response.data;
+    }
+    return null;
   } catch (error) {
     console.log("error at rename", error);
+    return null;
   }
 };
 
 export const utils = {
   refreshAccessToken,
   renameFile,
+  updateFileUsers,
   deleteFile,
 };

@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,22 +15,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
 import Image from "next/image";
 import { actionsDropdownItems } from "@/constants";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  deleteFile,
-  // renameFile,
-  updateFileUsers,
-} from "@/lib/actions/file.actions";
+import { updateFileUsers } from "@/lib/actions/file.actions";
 import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 import { utils } from "@/lib/utils/utils";
 
-const ActionDropdown = ({ file }: { file: any }) => {
+interface Props {
+  file: any;
+  fetchFiles: () => Promise<void>;
+}
+
+const ActionDropdown = ({ file, fetchFiles }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<ActionType | null>(null);
@@ -54,16 +54,17 @@ const ActionDropdown = ({ file }: { file: any }) => {
     let success = false;
 
     const actions = {
-      rename: async () =>
-        // renameFile({ fileId: file.$id, name, extension: file.extension, path })
-        await utils.renameFile(file._id, name),
-      share: () => updateFileUsers({ fileId: file.$id, emails, path }),
+      rename: async () => await utils.renameFile(file._id, name),
+      share: async () => await utils.updateFileUsers(file._id, emails),
       delete: async () => await utils.deleteFile(file._id),
     };
 
     success = await actions[action.value as keyof typeof actions]();
 
-    if (success) closeAllModals();
+    if (success) {
+      closeAllModals();
+      fetchFiles();
+    }
 
     setIsLoading(false);
   };
@@ -71,12 +72,7 @@ const ActionDropdown = ({ file }: { file: any }) => {
   const handleRemoveUser = async (email: string) => {
     const updatedEmails = emails.filter((e) => e !== email);
 
-    const success = await updateFileUsers({
-      fileId: file.$id,
-      emails: updatedEmails,
-      path,
-    });
-
+    const success = await utils.updateFileUsers(file._id, updatedEmails);
     if (success) setEmails(updatedEmails);
     closeAllModals();
   };
