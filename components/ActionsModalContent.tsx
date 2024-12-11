@@ -11,7 +11,7 @@ const ImageThumbnail = ({ file }: { file: Models.Document }) => (
     <Thumbnail type={file.type} extension={file.extension} url={file.url} />
     <div className="flex flex-col">
       <p className="subtitle-2 mb-1">{file.name}</p>
-      <FormattedDateTime date={file.$createdAt} className="caption" />
+      <FormattedDateTime date={file.createdAt} className="caption" />
     </div>
   </div>
 );
@@ -30,12 +30,12 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
       <div className="space-y-4 px-2 pt-2">
         <DetailRow label="Format:" value={file.extension} />
         <DetailRow label="Size:" value={convertFileSize(file.size)} />
-        <DetailRow label="Owner:" value={file.owner.fullName} />
-        <DetailRow label="Last edit:" value={formatDateTime(file.$updatedAt)} />
+        <DetailRow label="Owner:" value={file.owner.fullName || "test user"} />
+        <DetailRow label="Last edit:" value={formatDateTime(file.updatedAt)} />
       </div>
     </>
   );
-};
+};  
 
 interface Props {
   file: Models.Document;

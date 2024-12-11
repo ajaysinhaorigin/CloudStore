@@ -3,6 +3,7 @@ import { asyncHandler } from "../../../../lib/utils/asyncHandler";
 import { utils } from "../../../../lib/utils/server-utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
+import mongoose from "mongoose";
 
 export const GET = asyncHandler(
   verifyJWT(async (req, { params }) => {
@@ -15,20 +16,62 @@ export const GET = asyncHandler(
       const sort = searchParams.get("sort");
 
       const sortOrder = sort === "desc" ? -1 : 1;
-
       const searchPattern = searchText ? new RegExp(searchText, "i") : null;
+      const query = {
+        $or: [
+          { owner: new mongoose.Types.ObjectId(req.user._id) },
+          { users: { $in: [req.user.email] } },
+        ],
+      };
 
-      const query = { owner: req.user._id };
-
+      // also have to find files which are shared with the user
       if (type.length > 0) {
-        query.type = { $in: type }; // Match any value in the `type` array
+        query.type = { $in: type.split(",") || [] };
       }
 
       if (searchPattern) {
         query.name = { $regex: searchPattern };
       }
 
-      const files = await File.find(query).sort({ createdAt: sortOrder });
+      const files = await File.aggregate([
+        {
+          $match: query,
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "owner",
+            pipeline: [
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1,
+                  avatar: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $addFields: {
+            owner: {
+              $first: "$owner",
+            },
+          },
+        },
+        {
+          $sort: {
+            createdAt: sortOrder,
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+          },
+        },
+      ]);
 
       console.log({ files });
 

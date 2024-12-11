@@ -17,21 +17,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import Image from "next/image";
-import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/constants";
 import Link from "next/link";
-import { constructDownloadUrl } from "@/lib/utils/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   deleteFile,
-  renameFile,
+  // renameFile,
   updateFileUsers,
 } from "@/lib/actions/file.actions";
 import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
+import { utils } from "@/lib/utils/utils";
 
-const ActionDropdown = ({ file }: { file: Models.Document }) => {
+const ActionDropdown = ({ file }: { file: any }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<ActionType | null>(null);
@@ -55,11 +54,11 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
     let success = false;
 
     const actions = {
-      rename: () =>
-        renameFile({ fileId: file.$id, name, extension: file.extension, path }),
+      rename: async () =>
+        // renameFile({ fileId: file.$id, name, extension: file.extension, path })
+        await utils.renameFile(file._id, name),
       share: () => updateFileUsers({ fileId: file.$id, emails, path }),
-      delete: () =>
-        deleteFile({ fileId: file.$id, bucketFileId: file.bucketFileId, path }),
+      delete: async () => await utils.deleteFile(file._id),
     };
 
     success = await actions[action.value as keyof typeof actions]();
@@ -163,7 +162,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
 
                 if (
                   ["rename", "share", "delete", "details"].includes(
-                    actionItem.value,
+                    actionItem.value
                   )
                 ) {
                   setIsModalOpen(true);
@@ -172,7 +171,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             >
               {actionItem.value === "download" ? (
                 <Link
-                  href={constructDownloadUrl(file.bucketFileId)}
+                  href={file.url}
                   download={file.name}
                   className="flex items-center gap-2"
                 >

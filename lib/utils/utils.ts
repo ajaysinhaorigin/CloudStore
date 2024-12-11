@@ -1,5 +1,6 @@
 import { localStorageService } from "@/services/LocalStorage.service";
 import { apiUrls } from "@/tools/apiUrls";
+import { createHttpClient } from "@/tools/httpClient";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -260,11 +261,40 @@ const refreshAccessToken = async () => {
     localStorageService.setRefreshToken(data.refreshToken);
     return data;
   } catch (error) {
-    console.error("Token refresh failed:", error);
+    console.log("Token refresh failed:", error);
     return null;
+  }
+};
+
+const renameFile = async (id: string, name: string) => {
+  const httpClient = createHttpClient();
+  try {
+    const response = await httpClient.put(
+      `file/${id}/rename`,
+      { name },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("response", response);
+  } catch (error) {
+    console.log("error at rename", error);
+  }
+};
+const deleteFile = async (id: string) => {
+  const httpClient = createHttpClient();
+  try {
+    const response = await httpClient.delete(`file/${id}/delete`);
+    console.log("response", response);
+  } catch (error) {
+    console.log("error at rename", error);
   }
 };
 
 export const utils = {
   refreshAccessToken,
+  renameFile,
+  deleteFile,
 };
