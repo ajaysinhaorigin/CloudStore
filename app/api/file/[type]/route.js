@@ -10,13 +10,14 @@ export const GET = asyncHandler(
     try {
       await connectDB();
 
-      const type = (await params)?.type || [];
+      const typeParam = (await params)?.type || [];
       const { searchParams } = new URL(req.url);
       const searchText = searchParams.get("searchText");
       const sort = searchParams.get("sort");
 
       const sortOrder = sort === "desc" ? -1 : 1;
-      const searchPattern = searchText ? new RegExp(searchText, "i") : null;
+      const searchPattern = new RegExp(searchText.trim(), "i");
+
       const query = {
         $or: [
           { owner: new mongoose.Types.ObjectId(req.user._id) },
@@ -24,13 +25,22 @@ export const GET = asyncHandler(
         ],
       };
 
-      // also have to find files which are shared with the user
-      if (type.length > 0) {
-        query.type = { $in: type.split(",") || [] };
+      if (typeParam) {
+        const typeArray = typeParam.split(",").filter((t) => t.trim() !== "");
+        if (typeArray.length > 0 && typeArray[0] !== "all") {
+          query.type = { $in: typeArray };
+        }
       }
 
       if (searchPattern) {
-        query.name = { $regex: searchPattern };
+        query.$and = [
+          {
+            $or: [
+              { name: { $regex: searchPattern } },
+              { type: { $regex: searchPattern } },
+            ],
+          },
+        ];
       }
 
       const files = await File.aggregate([
@@ -55,9 +65,41 @@ export const GET = asyncHandler(
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "users",
+            foreignField: "email",
+            as: "users",
+            pipeline: [
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1,
+                  avatar: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
           $addFields: {
             owner: {
               $first: "$owner",
+            },
+          },
+        },
+        {
+          $addFields: {
+            users: {
+              $map: {
+                input: "$users",
+                as: "user",
+                in: {
+                  email: "$$user.email",
+                  fullName: "$$user.fullName",
+                  avatar: "$$user.avatar",
+                },
+              },
             },
           },
         },
@@ -72,8 +114,6 @@ export const GET = asyncHandler(
           },
         },
       ]);
-
-      console.log({ files });
 
       return utils.responseHandler({
         message: "files fetched successfully",

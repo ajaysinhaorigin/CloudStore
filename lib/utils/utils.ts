@@ -278,7 +278,7 @@ const renameFile = async (id: string, name: string) => {
   }
 };
 
-const updateFileUsers = async (id: string, emails: string[]) => {
+const updateFileUsers = async (id: string, emails: string[] | string) => {
   const httpClient = createHttpClient();
   try {
     const response = await httpClient.put(`${apiUrls.getFile}/${id}/share`, {

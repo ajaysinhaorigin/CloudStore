@@ -72,7 +72,6 @@ const FileUploader = ({ className }: Props) => {
         setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
       }
 
-      console.log("response", response.data);
       return response.data;
     } catch (error) {
       if (abortController.signal.aborted) {

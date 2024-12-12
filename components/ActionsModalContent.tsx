@@ -35,7 +35,7 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
       </div>
     </>
   );
-};  
+};
 
 interface Props {
   file: Models.Document;
@@ -67,14 +67,23 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
           </div>
 
           <ul className="pt-2">
-            {file.users.map((email: string) => (
+            {file.users.map((user: any) => (
               <li
-                key={email}
+                key={user.email}
                 className="flex items-center justify-between gap-2"
               >
-                <p className="subtitle-2">{email}</p>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={user.avatar || "/assets/images/avatar.png"}
+                    alt="Remove"
+                    width={24}
+                    height={24}
+                    className="remove-icon"
+                  />
+                  <p className="subtitle-2">{user.email}</p>
+                </div>
                 <Button
-                  onClick={() => onRemove(email)}
+                  onClick={() => onRemove(user.email)}
                   className="share-remove-user"
                 >
                   <Image
