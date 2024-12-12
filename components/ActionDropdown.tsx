@@ -20,7 +20,6 @@ import { actionsDropdownItems } from "@/constants";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { updateFileUsers } from "@/lib/actions/file.actions";
 import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 import { utils } from "@/lib/utils/utils";
@@ -44,7 +43,6 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
     setIsModalOpen(false);
     setIsDropdownOpen(false);
     setAction(null);
-    setName(file.name);
     //   setEmails([]);
   };
 
@@ -70,11 +68,11 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
   };
 
   const handleRemoveUser = async (email: string) => {
-    const updatedEmails = emails.filter((e) => e !== email);
+    const success = await utils.updateFileUsers(file._id, email);
 
-    const success = await utils.updateFileUsers(file._id, updatedEmails);
-    if (success) setEmails(updatedEmails);
-    closeAllModals();
+    if (success) {
+      fetchFiles();
+    }
   };
 
   const renderDialogContent = () => {

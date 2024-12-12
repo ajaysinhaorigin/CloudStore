@@ -36,7 +36,6 @@ export const ProfileProvider = ({
       if (user && user.data && user.data.user) {
         setProfile(user.data.user);
       }
-      console.log("user --", user);
     } catch (error) {
       console.log("error", error);
     }

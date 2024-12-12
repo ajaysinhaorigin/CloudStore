@@ -10,8 +10,6 @@ export const DELETE = asyncHandler(
     try {
       await connectDB();
       const { type: id } = (await params) || "";
-      console.log("id ----rename api", id);
-
       const existingFile = await File.findById(id);
 
       if (!existingFile) {

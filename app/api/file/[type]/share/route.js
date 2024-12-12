@@ -11,11 +11,9 @@ export const PUT = asyncHandler(
       const { type: id } = (await params) || [];
       const { emails } = await req.json();
 
-      console.log("emails", emails);
-
       if (!emails) {
         return utils.responseHandler({
-          message: "Emails are missing",
+          message: `${Array.isArray(emails) ? "Emails" : "Email"} are missing`,
           status: 400,
           success: false,
         });
@@ -32,18 +30,43 @@ export const PUT = asyncHandler(
       }
 
       if (file.owner.toString() !== req.user._id.toString()) {
+        if (Array.isArray(emails)) {
+          return utils.responseHandler({
+            message: "You are not authorized to share this file",
+            status: 401,
+            success: false,
+          });
+        }
+
+        if (emails !== req.user.email) {
+          return utils.responseHandler({
+            message: "You are not authorized to remove this file",
+            status: 401,
+            success: false,
+          });
+        }
+
+        file.users = file.users.filter((e) => e !== emails);
+        await file.save();
+
         return utils.responseHandler({
-          message: "You are not authorized to share this file",
-          status: 401,
-          success: false,
+          message: "File removed successfully",
+          data: {
+            file: file,
+          },
+          status: 200,
+          success: true,
         });
       }
 
-      file.users = [...file.users, ...emails];
+      file.users = Array.isArray(emails)
+        ? [...file.users, ...emails.map((e) => e.trim())]
+        : file.users.filter((e) => e !== emails);
+
       await file.save();
 
       return utils.responseHandler({
-        message: "User profile fetched successfully",
+        message: `${Array.isArray(emails) ? "File shared" : "File removed"} successfully`,
         data: {
           file: file,
         },

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Card from "@/components/Card";
 import Sort from "@/components/Sort";
 import { getFileTypesParams } from "@/lib/utils/utils";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
 
@@ -14,15 +14,16 @@ const Page = () => {
     documents: [],
   });
   const { type } = useParams();
+  const searchParams = useSearchParams();
+  const searchText = searchParams.get("query") || "";
   const types = getFileTypesParams(type as string) as FileType[];
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [type, searchText]);
 
   const fetchFiles = async () => {
     const httpClient = createHttpClient();
-    const searchText = "";
     const sort = "";
     try {
       const response = await httpClient.get(
@@ -32,8 +33,6 @@ const Page = () => {
       if (!response || response.status !== 200) {
         throw new Error("Failed to fetch files");
       }
-
-      console.log("API Response:", response);
 
       setFiles({
         total: response.data.total,
@@ -45,7 +44,7 @@ const Page = () => {
     }
   };
 
-  console.log("Files:", files);
+//   console.log("Files:", files);
   return (
     <div className="page-container">
       <section className="w-full">

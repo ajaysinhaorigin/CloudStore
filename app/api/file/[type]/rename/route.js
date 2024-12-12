@@ -45,8 +45,6 @@ export const PUT = asyncHandler(
         { new: true }
       );
 
-      console.log("file ----rename api", updatedFile);
-
       return utils.responseHandler({
         message: "File renamed successfully",
         data: {
