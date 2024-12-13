@@ -43,7 +43,6 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
     setIsModalOpen(false);
     setIsDropdownOpen(false);
     setAction(null);
-    //   setEmails([]);
   };
 
   const handleAction = async () => {

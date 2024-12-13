@@ -1,5 +1,5 @@
 export const apiUrls = {
-  baseUrl: process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL!,
+  baseUrl: process.env.NEXT_PUBLIC_DEVELOPMENT_API_BASE_URL!,
   signup: "/user/sign-up",
   signin: "/user/sign-in",
   verifyEmail: "/user/verify-email",

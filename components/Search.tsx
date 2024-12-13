@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,16 +12,16 @@ import { apiUrls } from "@/tools/apiUrls";
 const Search = () => {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("query") || "";
-  const [query, setQuery] = useState("");
+  const sort = searchParams.get("sort") || "";
+  const [query, setQuery] = useState(searchQuery);
   const [results, setResults] = useState<any>([]);
   const [cacheResults, setCacheResults] = useState<any>({});
   const [open, setOpen] = useState(false);
+  const [initialized, setInitialized] = useState(false); // Tracks first-load behavior
   const router = useRouter();
   const latestQuery = useRef("");
 
-  const handleFocus = () => {
-    setOpen(true);
-  };
+  const handleFocus = () => setOpen(true);
 
   useEffect(() => {
     const handleBlur = () => {
@@ -29,13 +29,20 @@ const Search = () => {
         setOpen(false);
       }, 200);
     };
+
     const searchBar = document.getElementById("searchbar") as HTMLElement;
     searchBar.addEventListener("blur", handleBlur);
 
-    return () => {
-      searchBar.removeEventListener("blur", handleBlur);
-    };
+    return () => searchBar.removeEventListener("blur", handleBlur);
   }, [open]);
+
+  useEffect(() => {
+    if (searchQuery === "") {
+      setQuery("");
+      setResults([]);
+    }
+    setInitialized(false);
+  }, [searchQuery]);
 
   useEffect(() => {
     latestQuery.current = query;
@@ -46,16 +53,17 @@ const Search = () => {
       return;
     }
 
-    let timer: any;
+    let timer: NodeJS.Timeout;
     if (cacheResults[query]) {
       setResults(cacheResults[query]);
+      if (initialized) {
+        setOpen(true);
+      }
     } else {
       timer = setTimeout(() => fetchFiles(query), 200);
     }
 
-    return () => {
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [query]);
 
   const fetchFiles = async (currentQuery: string) => {
@@ -73,32 +81,34 @@ const Search = () => {
       // Ensure the response is for the latest query
       if (latestQuery.current !== currentQuery) return;
 
-      setOpen(true);
       setResults(response.data.files);
       setCacheResults({
         ...cacheResults,
         [currentQuery]: response.data.files,
       });
+
+      if (initialized) {
+        setOpen(true);
+      }
     } catch (error) {
       console.log("Error fetching files:", error);
     }
   };
 
-  useEffect(() => {
-    if (!searchQuery) {
-      setQuery("");
-    }
-  }, [searchQuery]);
-
   const handleClickItem = (file: any) => {
     setOpen(false);
-    setResults([]);
+    setInitialized(false);
 
-    router.push(
-      `/${file.type === "video" || file.type === "audio" ? "media" : file.type + "s"}?query=${query}`
-    );
+    const url = `/${file.type === "video" || file.type === "audio" ? "media" : file.type + "s"}?query=${query}`;
+    sort === "" ? router.push(url) : router.push(`${url}&sort=${sort}`);
   };
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setInitialized(true);
+  };
+
+  console.log("results --search", results);
   return (
     <div className="search">
       <div className="search-input-wrapper">
@@ -113,12 +123,12 @@ const Search = () => {
           value={query}
           placeholder="Search..."
           className="search-input"
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => handleFocus()}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
         />
 
         {open && (
-          <ul className="search-result">
+          <ul className="search-result max-h-[400px] overflow-y-scroll">
             {results.length > 0 ? (
               results.map((file: any) => (
                 <li

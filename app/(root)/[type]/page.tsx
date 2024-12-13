@@ -16,15 +16,15 @@ const Page = () => {
   const { type } = useParams();
   const searchParams = useSearchParams();
   const searchText = searchParams.get("query") || "";
+  const sort = searchParams.get("sort") || "";
   const types = getFileTypesParams(type as string) as FileType[];
 
   useEffect(() => {
     fetchFiles();
-  }, [type, searchText]);
+  }, [type, searchText, sort]);
 
   const fetchFiles = async () => {
     const httpClient = createHttpClient();
-    const sort = "";
     try {
       const response = await httpClient.get(
         `${apiUrls.getFile}/${types}?searchText=${searchText}&sort=${sort}`
@@ -44,7 +44,6 @@ const Page = () => {
     }
   };
 
-//   console.log("Files:", files);
   return (
     <div className="page-container">
       <section className="w-full">

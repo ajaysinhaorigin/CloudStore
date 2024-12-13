@@ -12,10 +12,12 @@ export const GET = asyncHandler(
 
       const typeParam = (await params)?.type || [];
       const { searchParams } = new URL(req.url);
-      const searchText = searchParams.get("searchText");
-      const sort = searchParams.get("sort");
+      const searchText = searchParams.get("searchText") || "";
 
-      const sortOrder = sort === "desc" ? -1 : 1;
+      const sort = searchParams.get("sort") || "createdAt-desc";
+      const [sortBy, orderBy] = sort.split("-");
+      const sortOrder = orderBy === "desc" ? { [sortBy]: -1 } : { [sortBy]: 1 };
+
       const searchPattern = new RegExp(searchText.trim(), "i");
 
       const query = {
@@ -104,9 +106,7 @@ export const GET = asyncHandler(
           },
         },
         {
-          $sort: {
-            createdAt: sortOrder,
-          },
+          $sort: sortOrder,
         },
         {
           $project: {

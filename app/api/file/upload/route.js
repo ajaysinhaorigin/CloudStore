@@ -8,7 +8,6 @@ import File from "../../../../lib/models/file.model";
 
 export const POST = asyncHandler(
   verifyJWT(async (req, _) => {
-    console.log("req --> file upload route");
     try {
       await connectDB();
 
