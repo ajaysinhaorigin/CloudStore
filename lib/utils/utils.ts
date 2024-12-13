@@ -266,7 +266,6 @@ const renameFile = async (id: string, name: string) => {
     const response = await httpClient.put(`${apiUrls.getFile}/${id}/rename`, {
       name,
     });
-    console.log("response", response);
 
     if (response && response.status === 200) {
       return response.data;
@@ -284,7 +283,6 @@ const updateFileUsers = async (id: string, emails: string[] | string) => {
     const response = await httpClient.put(`${apiUrls.getFile}/${id}/share`, {
       emails,
     });
-    console.log("response", response);
 
     if (response && response.status === 200) {
       return response.data;
