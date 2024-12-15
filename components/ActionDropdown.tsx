@@ -26,7 +26,7 @@ import { utils } from "@/lib/utils/utils";
 
 interface Props {
   file: any;
-  fetchFiles: () => Promise<void>;
+  fetchFiles?: () => Promise<void>;
 }
 
 const ActionDropdown = ({ file, fetchFiles }: Props) => {
@@ -60,7 +60,7 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
 
     if (success) {
       closeAllModals();
-      fetchFiles();
+      fetchFiles && fetchFiles() ;
     }
 
     setIsLoading(false);
@@ -70,7 +70,7 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
     const success = await utils.updateFileUsers(file._id, email);
 
     if (success) {
-      fetchFiles();
+      fetchFiles && fetchFiles() ;
     }
   };
 
