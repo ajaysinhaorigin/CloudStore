@@ -2,28 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Models } from "node-appwrite";
-
 import ActionDropdown from "@/components/ActionDropdown";
 import Chart from "@/components/Chart";
 import { FormattedDateTime } from "@/components/FormattedDateTime";
 import Thumbnail from "@/components/Thumbnail";
 import { Separator } from "@/components/ui/separator";
-// import { getFiles, getTotalSpaceUsed } from "@/lib/actions/file.actions";
 import { convertFileSize, getUsageSummary } from "@/lib/utils/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createHttpClient } from "@/tools/httpClient";
+import { apiUrls } from "@/tools/apiUrls";
 
 const Dashboard = () => {
-  // Parallel requests
-  // const [files, totalSpace] = await Promise.all([
-  //   getFiles({ types: [], limit: 10 }),
-  //   getTotalSpaceUsed(),
-  // ]);
-
-  const [files, setFiles] = useState({
-    total: 0,
-    documents: [],
-  });
+  const [files, setFiles] = useState({ documents: [], total: 0 });
   const [totalSpace, setTotalSpace] = useState({
     image: { size: 0, latestDate: "" },
     document: { size: 0, latestDate: "" },
@@ -31,8 +21,41 @@ const Dashboard = () => {
     audio: { size: 0, latestDate: "" },
     other: { size: 0, latestDate: "" },
     used: 0,
-    all: 2 * 1024 * 1024 * 1024 /* 2GB available bucket storage */,
   });
+
+  useEffect(() => {
+    fetchFiles();
+    fetchTotalSpaceUsed();
+  }, []);
+
+  const fetchFiles = async () => {
+    const httpClient = createHttpClient();
+    try {
+      const response = await httpClient.get(`${apiUrls.getFile}/all?limit=10`);
+      if (!response || response.status !== 200) {
+        throw new Error("Failed to fetch files");
+      }
+      setFiles({
+        documents: response.data.files,
+        total: response.data.total,
+      });
+    } catch (error) {
+      console.log("Error fetching files:", error);
+    }
+  };
+
+  const fetchTotalSpaceUsed = async () => {
+    const httpClient = createHttpClient();
+    try {
+      const response = await httpClient.get(`${apiUrls.getTotalSpaceUsed}`);
+      if (!response || response.status !== 200) {
+        throw new Error("Failed to fetch files");
+      }
+      setTotalSpace(response.data.totalSpace);
+    } catch (error) {
+      console.log("Error fetching files:", error);
+    }
+  };
 
   // Get usage summary
   const usageSummary = getUsageSummary(totalSpace);
@@ -81,28 +104,27 @@ const Dashboard = () => {
         <h2 className="h3 xl:h2 text-light-100">Recent files uploaded</h2>
         {files.documents.length > 0 ? (
           <ul className="mt-5 flex flex-col gap-5">
-            {files.documents.map((file: Models.Document) => (
+            {files.documents.map((file: any) => (
               <Link
                 href={file.url}
                 target="_blank"
                 className="flex items-center gap-3"
-                key={file.$id}
+                key={file._id}
               >
                 <Thumbnail
                   type={file.type}
                   extension={file.extension}
                   url={file.url}
                 />
-
                 <div className="recent-file-details">
                   <div className="flex flex-col gap-1">
                     <p className="recent-file-name">{file.name}</p>
                     <FormattedDateTime
-                      date={file.$createdAt}
+                      date={file.createdAt}
                       className="caption"
                     />
                   </div>
-                  <ActionDropdown file={file} />
+                  <ActionDropdown file={file} fetchFiles={fetchFiles} />
                 </div>
               </Link>
             ))}

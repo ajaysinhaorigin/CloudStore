@@ -8,4 +8,5 @@ export const apiUrls = {
   refreshAccessToken: "/user/refresh-token",
   uploadFile: "/file/upload",
   getFile: "/file",
+  getTotalSpaceUsed: "/file/total-space",
 };

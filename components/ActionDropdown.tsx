@@ -26,7 +26,7 @@ import { utils } from "@/lib/utils/utils";
 
 interface Props {
   file: any;
-  fetchFiles?: () => Promise<void>;
+  fetchFiles: () => Promise<void>;
 }
 
 const ActionDropdown = ({ file, fetchFiles }: Props) => {
@@ -36,8 +36,6 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
   const [name, setName] = useState(file.name);
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
-
-  const path = usePathname();
 
   const closeAllModals = () => {
     setIsModalOpen(false);
@@ -60,7 +58,7 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
 
     if (success) {
       closeAllModals();
-      fetchFiles && fetchFiles() ;
+      fetchFiles && fetchFiles();
     }
 
     setIsLoading(false);
@@ -70,7 +68,7 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
     const success = await utils.updateFileUsers(file._id, email);
 
     if (success) {
-      fetchFiles && fetchFiles() ;
+      fetchFiles && fetchFiles();
     }
   };
 
