@@ -51,6 +51,7 @@ const Dashboard = () => {
       if (!response || response.status !== 200) {
         throw new Error("Failed to fetch files");
       }
+      console.log('response.data.totalSpace', response.data.totalSpace)
       setTotalSpace(response.data.totalSpace);
     } catch (error) {
       console.log("Error fetching files:", error);

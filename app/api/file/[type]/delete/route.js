@@ -3,6 +3,7 @@ import { verifyJWT } from "../../../../../lib/middlewares/verifyJwt";
 import { utils } from "../../../../../lib/utils/server-utils";
 import connectDB from "../../../../../lib/dbConnection";
 import File from "../../../../../lib/models/file.model";
+import User from "../../../../../lib/models/user.model";
 import { deleteFromCloudinary } from "../../../../../lib/utils/cloudinary";
 
 export const DELETE = asyncHandler(
@@ -31,10 +32,33 @@ export const DELETE = asyncHandler(
       const result = await File.deleteOne({ _id: id });
 
       if (!result) {
-        throw new ApiError(500, "Something went wrong while deleting a video");
+        return utils.responseHandler({
+          message: "Something went wrong while deleting a video",
+          status: 500,
+          success: false,
+        });
       }
 
       await deleteFromCloudinary(existingFile.url);
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        [
+          {
+            $set: {
+              totalSpaceUsed: {
+                $max: [
+                  { $subtract: ["$totalSpaceUsed", existingFile.size] },
+                  0,
+                ],
+              },
+            },
+          },
+        ],
+        { returnDocument: "after" }
+      );
+
+      console.log("updatedUser", updatedUser);
 
       return utils.responseHandler({
         message: "File deleted successfully",

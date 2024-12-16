@@ -26,7 +26,7 @@ export const GET = asyncHandler(
         audio: { size: 0, latestDate: "" },
         other: { size: 0, latestDate: "" },
         used: 0,
-        all: 2 * 1024 * 1024 * 1024,
+        all: 1 * 1024 * 1024 * 1024,
       };
 
       files.forEach((file) => {
@@ -37,9 +37,9 @@ export const GET = asyncHandler(
 
         if (
           !totalSpace[fileType].latestDate ||
-          new Date(file.$updatedAt) > new Date(totalSpace[fileType].latestDate)
+          new Date(file.updatedAt) > new Date(totalSpace[fileType].latestDate)
         ) {
-          totalSpace[fileType].latestDate = file.$updatedAt;
+          totalSpace[fileType].latestDate = file.updatedAt;
         }
       });
 
