@@ -27,7 +27,7 @@ const Search = () => {
     const handleBlur = () => {
       setTimeout(() => {
         setOpen(false);
-      }, 300);
+      }, 250);
     };
 
     const searchBar = document.getElementById("searchbar") as HTMLElement;

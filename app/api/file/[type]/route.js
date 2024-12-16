@@ -13,8 +13,9 @@ export const GET = asyncHandler(
       const typeParam = (await params)?.type || [];
       const { searchParams } = new URL(req.url);
       const searchText = searchParams.get("searchText") || "";
-
       const sort = searchParams.get("sort") || "createdAt-desc";
+      // Number of recent files to fetch (can be passed as a query param)
+      const limit = searchParams.get("limit");
       const [sortBy, orderBy] = sort.split("-");
       const sortOrder = orderBy === "desc" ? { [sortBy]: -1 } : { [sortBy]: 1 };
 
@@ -45,7 +46,7 @@ export const GET = asyncHandler(
         ];
       }
 
-      const files = await File.aggregate([
+      const aggregatePipline = [
         {
           $match: query,
         },
@@ -113,7 +114,15 @@ export const GET = asyncHandler(
             __v: 0,
           },
         },
-      ]);
+      ];
+
+      if (limit) {
+        aggregatePipline.push({
+          $limit: 10,
+        });
+      }
+
+      const files = await File.aggregate(aggregatePipline);
 
       return utils.responseHandler({
         message: "files fetched successfully",
