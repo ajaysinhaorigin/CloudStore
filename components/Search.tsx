@@ -108,7 +108,6 @@ const Search = () => {
     setInitialized(true);
   };
 
-  console.log("results --search", results);
   return (
     <div className="search">
       <div className="search-input-wrapper">

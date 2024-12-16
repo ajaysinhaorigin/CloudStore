@@ -28,7 +28,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
- const Chart = ({ used = 0 }: { used: number }) => {
+const Chart = ({ used = 0 }: { used: number }) => {
   const chartData = [{ storage: "used", 10: used, fill: "white" }];
 
   return (
@@ -92,11 +92,11 @@ const chartConfig = {
       <CardHeader className="chart-details">
         <CardTitle className="chart-title">Available Storage</CardTitle>
         <CardDescription className="chart-description">
-          {used ? convertFileSize(used) : "2GB"} / 2GB
+          {used ? convertFileSize(used) : "1GB"} / 1GB
         </CardDescription>
       </CardHeader>
     </Card>
   );
 };
 
-export default Chart
+export default Chart;

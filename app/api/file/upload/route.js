@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../../../../lib/utils/cloudinary";
 import { getFileType, parseStringify } from "../../../../lib/utils/utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
+import User from "../../../../lib/models/user.model";
 
 export const POST = asyncHandler(
   verifyJWT(async (req, _) => {
@@ -32,6 +33,35 @@ export const POST = asyncHandler(
           success: false,
         });
       }
+
+      const user = await User.findById(ownerId);
+
+      if (!user) {
+        return utils.responseHandler({
+          message: "User not found",
+          status: 404,
+          success: false,
+        });
+      }
+
+      if (user.totalSpaceUsed + fileResponse.bytes > user.totalSpace) {
+        await deleteFromCloudinary(fileResponse.url);
+        return utils.responseHandler({
+          message: "You have reached your storage limit",
+          status: 400,
+          success: false,
+        });
+      }
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: ownerId },
+        {
+          $inc: { totalSpaceUsed: fileResponse.bytes },
+        },
+        { returnDocument: "after" }
+      );
+
+      console.log("updatedUser", updatedUser);
 
       const fileDocument = {
         type: getFileType(formDataFile.name).type,
