@@ -8,11 +8,12 @@ import connectDB from "../../../../lib/dbConnection";
 
 export const POST = asyncHandler(async (req, _) => {
   const cookieStore = await cookies();
-  
+
   const incomingRefreshToken =
     req.cookies?.get("refreshToken")?.value || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
+    utils.clearCookies(cookieStore);
     return utils.responseHandler({
       message: "unauthorized request",
       status: 401,

@@ -14,7 +14,7 @@ const Search = () => {
   const searchQuery = searchParams.get("query") || "";
   const sort = searchParams.get("sort") || "";
   const [query, setQuery] = useState(searchQuery);
-  const [results, setResults] = useState<any>([]);
+  const [results, setResults] = useState<IDocument[]>([]);
   const [cacheResults, setCacheResults] = useState<any>({});
   const [open, setOpen] = useState(false);
   const [initialized, setInitialized] = useState(false); // Tracks first-load behavior
@@ -95,7 +95,7 @@ const Search = () => {
     }
   };
 
-  const handleClickItem = (file: any) => {
+  const handleClickItem = (file: IDocument) => {
     setOpen(false);
     setInitialized(false);
 
@@ -129,7 +129,7 @@ const Search = () => {
         {open && (
           <ul className="search-result max-h-[400px] overflow-y-scroll">
             {results.length > 0 ? (
-              results.map((file: any) => (
+              results.map((file) => (
                 <li
                   className="flex items-center justify-between"
                   key={file._id}

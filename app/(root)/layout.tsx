@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { ProfileProvider } from "@/context/ProfileContext";
-import { Toaster } from "@/components/ui/toaster";
 import Sidebar from "@/components/Sidebar";
 import MobileNavigation from "@/components/MobileNavigation";
 import Header from "@/components/Header";
@@ -17,7 +16,6 @@ const Layout = async ({ children }: { children: ReactNode }) => {
           <Header />
           <div className="main-content">{children}</div>
         </section>
-        <Toaster />
       </main>
     </ProfileProvider>
   );

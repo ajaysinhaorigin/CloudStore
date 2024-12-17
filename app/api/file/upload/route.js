@@ -2,7 +2,7 @@ import { asyncHandler } from "../../../../lib/utils/asyncHandler";
 import { verifyJWT } from "../../../../lib/middlewares/verifyJwt";
 import { utils } from "../../../../lib/utils/server-utils";
 import { uploadOnCloudinary } from "../../../../lib/utils/cloudinary";
-import { getFileType, parseStringify } from "../../../../lib/utils/utils";
+import { getFileType } from "../../../../lib/utils/utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
 import User from "../../../../lib/models/user.model";
@@ -91,7 +91,7 @@ export const POST = asyncHandler(
         status: 200,
         success: true,
         data: {
-          file: parseStringify(existedFile),
+          file: existedFile,
         },
       });
     } catch (error) {

@@ -8,6 +8,9 @@ export async function middleware(request) {
   const accessToken = (await cookies()).get("accessToken");
   const isPublicRoute = publicRoutes.includes(pathname);
 
+  console.log("isPublicRoute", request.url);
+  console.log("pathname", pathname);
+
   console.log("accessToken", accessToken);
   if (accessToken && accessToken?.value) {
     return isPublicRoute
@@ -21,5 +24,11 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/sign-in", "/sign-up", "/profile", "/"],
+  matcher: [
+    "/sign-in",
+    "/sign-up",
+    "/profile",
+    "/",
+    "/:type(images|documents|media|others)*", // Dynamic routes like /images, /documents, /media, /others
+  ],
 };

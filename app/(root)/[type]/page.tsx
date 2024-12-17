@@ -7,9 +7,10 @@ import { getFileTypesParams } from "@/lib/utils/utils";
 import { useParams, useSearchParams } from "next/navigation";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
+import { useToast } from "@/hooks/use-toast";
 
 const Page = () => {
-  const [files, setFiles] = useState({
+  const [files, setFiles] = useState<IFile>({
     total: 0,
     documents: [],
   });
@@ -18,6 +19,8 @@ const Page = () => {
   const searchText = searchParams.get("query") || "";
   const sort = searchParams.get("sort") || "";
   const types = getFileTypesParams(type as string) as FileType[];
+
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchFiles();
@@ -31,7 +34,15 @@ const Page = () => {
       );
 
       if (!response || response.status !== 200) {
-        throw new Error("Failed to fetch files");
+        toast({
+          description: (
+            <p className="body-2 text-white">
+              {response?.message || `Something went wrong while fetching files`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+        return;
       }
 
       setFiles({
@@ -51,7 +62,7 @@ const Page = () => {
 
         <div className="total-size-section">
           <p className="body1">
-            Total : <span className="h5">{254}</span>
+            Total : <span className="h5">{files.total}</span>
           </p>
 
           <div className="sort-container">
@@ -64,7 +75,7 @@ const Page = () => {
       {/* Render the files */}
       {files.total > 0 ? (
         <section className="file-list">
-          {files.documents.map((file: any) => (
+          {files.documents.map((file) => (
             <Card key={file._id} file={file} fetchFiles={fetchFiles} />
           ))}
         </section>
