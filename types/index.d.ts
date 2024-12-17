@@ -6,69 +6,35 @@ declare interface ActionType {
   value: string;
 }
 
-declare interface SearchParamProps {
-  params?: Promise<SegmentParams>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+declare interface IProfile {
+  _id: string;
+  email: string;
+  fullName: string;
+  avatar: string;
+  totalSpace: number;
+  totalSpaceUsed: number;
 }
 
-declare interface UploadFileProps {
-  file: File;
-  ownerId: string;
-  accountId: string;
-  path: string;
+declare interface IOwner {
+  fullName: string;
+  email: string;
+  avatar: string;
 }
-declare interface GetFilesProps {
-  types: FileType[];
-  searchText?: string;
-  sort?: string;
-  limit?: number;
-}
-declare interface RenameFileProps {
-  fileId: string;
+
+declare interface IDocument {
+  _id: string;
   name: string;
-  extension: string;
-  path: string;
-}
-declare interface UpdateFileUsersProps {
-  fileId: string;
-  emails: string[];
-  path: string;
-}
-declare interface DeleteFileProps {
-  fileId: string;
-  bucketFileId: string;
-  path: string;
-}
-
-declare interface FileUploaderProps {
-  ownerId: string;
-  accountId: string;
-  className?: string;
-}
-
-declare interface MobileNavigationProps {
-  ownerId: string;
-  accountId: string;
-  fullName: string;
-  avatar: string;
-  email: string;
-}
-declare interface SidebarProps {
-  fullName: string;
-  avatar: string;
-  email: string;
-}
-
-declare interface ThumbnailProps {
-  type: string;
-  extension: string;
   url: string;
-  className?: string;
-  imageClassName?: string;
+  type: FileType;
+  extension: string;
+  size: number;
+  owner: IOwner;
+  createdAt: string;
+  updatedAt: string;
+  users: IOwner[];
 }
 
-declare interface ShareInputProps {
-  file: Models.Document;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemove: (email: string) => void;
+declare interface IFile {
+  documents: IDocument[];
+  total: number;
 }

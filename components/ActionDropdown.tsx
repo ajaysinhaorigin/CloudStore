@@ -20,12 +20,11 @@ import { actionsDropdownItems } from "@/constants";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 import { utils } from "@/lib/utils/utils";
 
 interface Props {
-  file: any;
+  file: IDocument;
   fetchFiles: () => Promise<void>;
 }
 

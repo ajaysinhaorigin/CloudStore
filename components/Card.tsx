@@ -5,7 +5,7 @@ import FormattedDateTime from "./FormattedDateTime";
 import ActionDropdown from "./ActionDropdown";
 
 interface Props {
-  file: any;
+  file: IDocument;
   fetchFiles: () => Promise<void>;
 }
 

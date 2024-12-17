@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { Logout } from "@/public/assets";
 import Search from "./Search";
 import FileUploader from "./FileUploader";
-import { useProfileContext } from "@/context/ProfileContext";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
 import { localStorageService } from "@/services/LocalStorage.service";
@@ -13,10 +12,8 @@ import { useRouter } from "next/navigation";
 
 const Header = () => {
   const router = useRouter();
-  const {
-    profile: { fullName, avatar, email, $id: userId },
-  } = useProfileContext();
-  
+
+
   const onLogout = async () => {
     const httpClient = createHttpClient();
 

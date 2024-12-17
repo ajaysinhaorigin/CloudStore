@@ -18,10 +18,10 @@ import Image from "next/image";
 import { MouseEvent, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { sendEmailOTP } from "@/lib/actions/user.actions";
 import { createHttpClient } from "@/tools/httpClient";
 import { localStorageService } from "@/services/LocalStorage.service";
 import { apiUrls } from "@/tools/apiUrls";
+import { utils } from "@/lib/utils/server-utils";
 
 interface Props {
   email: string;
@@ -59,7 +59,7 @@ const OTPModal = ({ email }: Props) => {
 
   const onResendOTP = async () => {
     try {
-      await sendEmailOTP({ email });
+      await utils.sendEmailOTP(email);
     } catch (error) {
       console.log("Failed to send OTP", error);
     }

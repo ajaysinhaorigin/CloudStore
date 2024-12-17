@@ -20,6 +20,7 @@ import Link from "next/link";
 import OTPModal from "./OTPModal";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   type: "sign-in" | "sign-up";
@@ -39,6 +40,8 @@ const AuthForm = ({ type }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [accountId, setAccountId] = useState(null);
+
+  const { toast } = useToast();
 
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,12 +65,26 @@ const AuthForm = ({ type }: Props) => {
               email: values.email,
             });
 
+      if (user.status !== 200) {
+        setIsLoading(false);
+        return toast({
+          description: (
+            <p className="body-2 text-white">
+              {user?.message || `Something went wrong while ${type}`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+      }
+
       if (user && user.status === 200) {
         console.log("user --", user.data.emailVerificationToken);
         setAccountId(user.data.emailVerificationToken);
       }
     } catch (error) {
       console.log("error", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

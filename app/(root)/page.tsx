@@ -11,9 +11,10 @@ import { convertFileSize, getUsageSummary } from "@/lib/utils/utils";
 import { useEffect, useState } from "react";
 import { createHttpClient } from "@/tools/httpClient";
 import { apiUrls } from "@/tools/apiUrls";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const [files, setFiles] = useState({ documents: [], total: 0 });
+  const [files, setFiles] = useState<IFile>({ documents: [], total: 0 });
   const [totalSpace, setTotalSpace] = useState({
     image: { size: 0, latestDate: "" },
     document: { size: 0, latestDate: "" },
@@ -22,6 +23,8 @@ const Dashboard = () => {
     other: { size: 0, latestDate: "" },
     used: 0,
   });
+
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchFiles();
@@ -32,9 +35,20 @@ const Dashboard = () => {
     const httpClient = createHttpClient();
     try {
       const response = await httpClient.get(`${apiUrls.getFile}/all?limit=10`);
+
       if (!response || response.status !== 200) {
-        throw new Error("Failed to fetch files");
+        toast({
+          description: (
+            <p className="body-2 text-white">
+              {response?.message ||
+                `Something went wrong while fetching recent files`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+        return;
       }
+
       setFiles({
         documents: response.data.files,
         total: response.data.total,
@@ -47,11 +61,19 @@ const Dashboard = () => {
   const fetchTotalSpaceUsed = async () => {
     const httpClient = createHttpClient();
     try {
-      const response = await httpClient.get(`${apiUrls.getTotalSpaceUsed}`);
+      const response = await httpClient.get(apiUrls.getTotalSpaceUsed);
       if (!response || response.status !== 200) {
-        throw new Error("Failed to fetch files");
+        toast({
+          description: (
+            <p className="body-2 text-white">
+              {response?.message ||
+                `Something went wrong while fetching total space used`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+        return;
       }
-      console.log('response.data.totalSpace', response.data.totalSpace)
       setTotalSpace(response.data.totalSpace);
     } catch (error) {
       console.log("Error fetching files:", error);
@@ -105,7 +127,7 @@ const Dashboard = () => {
         <h2 className="h3 xl:h2 text-light-100">Recent files uploaded</h2>
         {files.documents.length > 0 ? (
           <ul className="mt-5 flex flex-col gap-5">
-            {files.documents.map((file: any) => (
+            {files.documents.map((file) => (
               <Link
                 href={file.url}
                 target="_blank"

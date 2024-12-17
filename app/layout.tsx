@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -10,7 +11,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "CloudStore - The Best Cloud Storage platform",
-  description: "The Best Cloud Storage platform",
+  description: "The Best Place to store your files",
 };
 
 export default function RootLayout({
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} font-poppins antialiased`}>
         <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );

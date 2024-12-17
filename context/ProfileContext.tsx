@@ -9,10 +9,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileContextType {
-  profile: any;
-  setProfile: Dispatch<SetStateAction<any>>;
+  profile: IProfile;
+  setProfile: Dispatch<SetStateAction<IProfile>>;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -22,7 +23,15 @@ export const ProfileProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState({
+    _id: "",
+    email: "",
+    fullName: "",
+    avatar: "",
+    totalSpace: 0,
+    totalSpaceUsed: 0,
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
     getProfile();
@@ -33,9 +42,21 @@ export const ProfileProvider = ({
 
     try {
       const user = await httpClient.get(apiUrls.profile);
-      if (user && user.data && user.data.user) {
-        setProfile(user.data.user);
+
+      if (!user || user.status !== 200) {
+        toast({
+          description: (
+            <p className="body-2 text-white">
+              {user?.message ||
+                `Something went wrong while fetching profile details`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+        return;
       }
+
+      setProfile(user.data.user);
     } catch (error) {
       console.log("error", error);
     }
