@@ -22,7 +22,7 @@ import { createHttpClient } from "@/tools/httpClient";
 import { localStorageService } from "@/services/LocalStorage.service";
 import { apiUrls } from "@/tools/apiUrls";
 import { utils } from "@/lib/utils/server-utils";
-
+import { useToast } from "@/hooks/use-toast";
 interface Props {
   email: string;
   accountId: string | null;
@@ -34,6 +34,8 @@ const OTPModal = ({ email }: Props) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { toast } = useToast();
+
   const onOTPSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -44,6 +46,18 @@ const OTPModal = ({ email }: Props) => {
         email,
         code: password,
       });
+
+      if (!session || session.status !== 200) {
+        setIsLoading(false);
+        return toast({
+          description: (
+            <p className="body-2 text-white">
+              {session?.message || "Something went wrong while verifying OTP"}
+            </p>
+          ),
+          className: "error-toast",
+        });
+      }
 
       if (session) {
         localStorageService.setAccessToken(session.data.accessToken);
