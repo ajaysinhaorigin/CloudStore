@@ -53,15 +53,12 @@ export const POST = asyncHandler(
         });
       }
 
-      const updatedUser = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { _id: ownerId },
         {
           $inc: { totalSpaceUsed: fileResponse.bytes },
-        },
-        { returnDocument: "after" }
+        }
       );
-
-      console.log("updatedUser", updatedUser);
 
       const fileDocument = {
         type: getFileType(formDataFile.name).type,
@@ -74,9 +71,9 @@ export const POST = asyncHandler(
       };
 
       const createdFile = await File.create(fileDocument);
-      const existedFile = await File.findById(createdFile._id).select(
-        "-createdAt -updatedAt -__v"
-      );
+      const existedFile = await File.findById(createdFile._id)
+        .select("-createdAt -updatedAt -__v")
+        .lean();
 
       if (!existedFile) {
         return utils.responseHandler({
