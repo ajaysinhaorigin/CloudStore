@@ -5,124 +5,126 @@ import { uploadOnCloudinary } from "../../../../lib/utils/cloudinary";
 import { getFileType } from "../../../../lib/utils/utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
-import jwt from "jsonwebtoken";
-import User from "../../../../lib/models/user.model";
-import { mongodbConfig } from "../../../../lib/dbConnection/config";
+// import jwt from "jsonwebtoken";
+// import User from "../../../../lib/models/user.model";
+// import { mongodbConfig } from "../../../../lib/dbConnection/config";
 
-const verify = (req) => {
-  const token =
-    req.cookies?.get("accessToken")?.value ||
-    req.headers?.authorization?.replace("Bearer ", "");
+// const verify = (req) => {
+//   const token =
+//     req.cookies?.get("accessToken")?.value ||
+//     req.headers?.authorization?.replace("Bearer ", "");
 
-  if (!token) throw new Error("Authorization token is missing");
-  try {
-    return jwt.verify(token, mongodbConfig.accessTokenSecret);
-  } catch (error) {
-    throw new Error("Token verification failed: " + error.message);
-  }
-};
+//   if (!token) throw new Error("Authorization token is missing");
+//   try {
+//     return jwt.verify(token, mongodbConfig.accessTokenSecret);
+//   } catch (error) {
+//     throw new Error("Token verification failed: " + error.message);
+//   }
+// };
 
-const fetchUser = async (decodedToken) => {
-  try {
-    return await User.findById(decodedToken._id)
-      .select("_id email fullName avatar")
-      .lean();
-  } catch (error) {
-    throw new Error("Failed to fetch user: " + error.message);
-  }
-};
+// const fetchUser = async (decodedToken) => {
+//   try {
+//     return await User.findById(decodedToken._id)
+//       .select("_id email fullName avatar")
+//       .lean();
+//   } catch (error) {
+//     throw new Error("Failed to fetch user: " + error.message);
+//   }
+// };
 
-export const POST = asyncHandler(async (req, _) => {
-  try {
-    await connectDB();
+export const POST = asyncHandler(
+  verifyJWT(async (req, _) => {
+    try {
+      await connectDB();
 
-    const decodedToken = verify(req);
-    const requestUser = await fetchUser(decodedToken);
+      //   const decodedToken = verify(req);
+      //   const requestUser = await fetchUser(decodedToken);
 
-    const formData = await req.formData();
-    const formDataFile = await formData.get("file");
-    const ownerId = requestUser._id;
+      const formData = await req.formData();
+      const formDataFile = await formData.get("file");
+      const ownerId = req.user._id;
 
-    if (!formDataFile) {
-      return utils.responseHandler({
-        message: "File is missing",
-        status: 400,
-        success: false,
-      });
-    }
-
-    const fileResponse = await uploadOnCloudinary(formDataFile);
-
-    if (!fileResponse) {
-      return utils.responseHandler({
-        message: "Failed to upload file",
-        status: 500,
-        success: false,
-      });
-    }
-
-    const user = await User.findById(ownerId);
-
-    if (!user) {
-      return utils.responseHandler({
-        message: "User not found",
-        status: 404,
-        success: false,
-      });
-    }
-
-    if (user.totalSpaceUsed + fileResponse.bytes > user.totalSpace) {
-      await deleteFromCloudinary(fileResponse.url);
-      return utils.responseHandler({
-        message: "You have reached your storage limit",
-        status: 400,
-        success: false,
-      });
-    }
-
-    await User.findOneAndUpdate(
-      { _id: ownerId },
-      {
-        $inc: { totalSpaceUsed: fileResponse.bytes },
+      if (!formDataFile) {
+        return utils.responseHandler({
+          message: "File is missing",
+          status: 400,
+          success: false,
+        });
       }
-    );
 
-    const fileDocument = {
-      type: getFileType(formDataFile.name).type,
-      name: formDataFile.name,
-      url: fileResponse.url,
-      extension: getFileType(formDataFile.name).extension,
-      size: fileResponse.bytes,
-      owner: ownerId,
-      users: [],
-    };
+      const fileResponse = await uploadOnCloudinary(formDataFile);
 
-    const createdFile = await File.create(fileDocument);
-    const existedFile = await File.findById(createdFile._id)
-      .select("-createdAt -updatedAt -__v")
-      .lean();
+      if (!fileResponse) {
+        return utils.responseHandler({
+          message: "Failed to upload file",
+          status: 500,
+          success: false,
+        });
+      }
 
-    if (!existedFile) {
+      const user = await User.findById(ownerId);
+
+      if (!user) {
+        return utils.responseHandler({
+          message: "User not found",
+          status: 404,
+          success: false,
+        });
+      }
+
+      if (user.totalSpaceUsed + fileResponse.bytes > user.totalSpace) {
+        await deleteFromCloudinary(fileResponse.url);
+        return utils.responseHandler({
+          message: "You have reached your storage limit",
+          status: 400,
+          success: false,
+        });
+      }
+
+      await User.findOneAndUpdate(
+        { _id: ownerId },
+        {
+          $inc: { totalSpaceUsed: fileResponse.bytes },
+        }
+      );
+
+      const fileDocument = {
+        type: getFileType(formDataFile.name).type,
+        name: formDataFile.name,
+        url: fileResponse.url,
+        extension: getFileType(formDataFile.name).extension,
+        size: fileResponse.bytes,
+        owner: ownerId,
+        users: [],
+      };
+
+      const createdFile = await File.create(fileDocument);
+      const existedFile = await File.findById(createdFile._id)
+        .select("-createdAt -updatedAt -__v")
+        .lean();
+
+      if (!existedFile) {
+        return utils.responseHandler({
+          message: "Something went wrong while uploading video",
+          status: 500,
+          success: false,
+        });
+      }
+
       return utils.responseHandler({
-        message: "Something went wrong while uploading video",
-        status: 500,
+        message: "File uploaded successfully",
+        status: 200,
+        success: true,
+        data: {
+          file: existedFile,
+        },
+      });
+    } catch (error) {
+      return utils.responseHandler({
+        message: error.message || "Internal Server Error while uploading file",
+        status: error.status || 500,
         success: false,
       });
     }
-
-    return utils.responseHandler({
-      message: "File uploaded successfully",
-      status: 200,
-      success: true,
-      data: {
-        file: existedFile,
-      },
-    });
-  } catch (error) {
-    return utils.responseHandler({
-      message: error.message || "Internal Server Error while uploading file",
-      status: error.status || 500,
-      success: false,
-    });
-  }
-});
+  })
+);
