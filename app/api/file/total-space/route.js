@@ -3,6 +3,7 @@ import { verifyJWT } from "../../../../lib/middlewares/verifyJwt";
 import { utils } from "../../../../lib/utils/server-utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
+import mongoose from "mongoose";
 
 export const GET = asyncHandler(
   verifyJWT(async (req, _) => {
@@ -11,7 +12,7 @@ export const GET = asyncHandler(
 
       // Aggregation to optimize performance
       const totalSpace = await File.aggregate([
-        { $match: { owner: req.user._id } },
+        { $match: { owner: new mongoose.Types.ObjectId(req.user._id) } },
         {
           $group: {
             _id: "$type",
