@@ -13,10 +13,8 @@ import { useRouter } from "next/navigation";
 const Header = () => {
   const router = useRouter();
 
-
   const onLogout = async () => {
     const httpClient = createHttpClient();
-
     try {
       const response = await httpClient.post(apiUrls.logout, {});
       if (response && response.status === 200) {

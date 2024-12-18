@@ -1,7 +1,9 @@
+import jwt from "jsonwebtoken";
 import User from "../models/user.model";
 import { Resend } from "resend";
 import EmailTemplate from "@/components/EmailTemplate";
 import { NextResponse } from "next/server";
+import { mongodbConfig } from "../dbConnection/config";
 
 const resend = new Resend("re_VmPswVAn_KYkqhkooStWJ76iCfqoMaJts");
 
@@ -91,9 +93,34 @@ const clearCookies = (cookieStore: any) => {
   });
 };
 
+const verifyJWT = (req: any) => {
+  const token =
+    req.cookies?.get("accessToken")?.value ||
+    req.headers?.authorization?.replace("Bearer ", "");
+
+  if (!token) throw new Error("Authorization token is missing");
+  try {
+    return jwt.verify(token, mongodbConfig.accessTokenSecret);
+  } catch (error: any) {
+    throw new Error("Token verification failed: " + error.message);
+  }
+};
+
+const fetchCurrentUser = async (decodedToken: any) => {
+  try {
+    return await User.findById(decodedToken._id)
+      .select("_id email fullName avatar")
+      .lean();
+  } catch (error: any) {
+    throw new Error("Failed to fetch user: " + error.message);
+  }
+};
+
 export const utils = {
   responseHandler,
   generateAccessAndRefreshToken,
   sendEmailOTP,
   clearCookies,
+  verifyJWT,
+  fetchCurrentUser,
 };
