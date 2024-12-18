@@ -3,6 +3,7 @@ import { verifyJWT } from "../../../../lib/middlewares/verifyJwt";
 import { utils } from "../../../../lib/utils/server-utils";
 import connectDB from "../../../../lib/dbConnection";
 import File from "../../../../lib/models/file.model";
+import mongoose from "mongoose";
 
 export const GET = asyncHandler(
   verifyJWT(async (req, _) => {
