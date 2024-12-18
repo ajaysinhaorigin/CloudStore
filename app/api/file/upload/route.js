@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import User from "../../../../lib/models/user.model";
 import { mongodbConfig } from "../../../../lib/dbConnection/config";
 
-export const verify = (req) => {
+const verify = (req) => {
   const token =
     req.cookies?.get("accessToken")?.value ||
     req.headers?.authorization?.replace("Bearer ", "");
@@ -22,7 +22,7 @@ export const verify = (req) => {
   }
 };
 
-export const fetchUser = async (decodedToken) => {
+const fetchUser = async (decodedToken) => {
   try {
     return await User.findById(decodedToken._id)
       .select("_id email fullName avatar")
