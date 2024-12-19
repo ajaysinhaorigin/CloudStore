@@ -257,6 +257,17 @@ const renameFile = async (id: string, name: string) => {
       name,
     });
 
+    console.log("response", response);
+
+    return response;
+
+    if (!response || response.status !== 200) {
+      return {
+        success: false,
+        message: response?.message || "Failed to rename file",
+      };
+    }
+
     if (response && response.status === 200) {
       return response.data;
     }
@@ -274,6 +285,15 @@ const updateFileUsers = async (id: string, emails: string[] | string) => {
       emails,
     });
 
+    if (!response || response.status !== 200) {
+      return {
+        success: false,
+        message: response?.message || "Failed to share file",
+      };
+    }
+
+    return response;
+
     if (response && response.status === 200) {
       return response.data;
     }
@@ -288,6 +308,15 @@ const deleteFile = async (id: string) => {
   const httpClient = createHttpClient();
   try {
     const response = await httpClient.delete(`${apiUrls.getFile}/${id}/delete`);
+
+    if (!response || response.status !== 200) {
+      return {
+        success: false,
+        message: response?.message || "Failed to delete file",
+      };
+    }
+
+    return response;
 
     if (response && response.status === 200) {
       return response.data;

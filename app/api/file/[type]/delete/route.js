@@ -41,7 +41,7 @@ export const DELETE = asyncHandler(
 
       await deleteFromCloudinary(existingFile.url);
 
-      const updatedUser = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { _id: req.user._id },
         [
           {
@@ -57,8 +57,6 @@ export const DELETE = asyncHandler(
         ],
         { returnDocument: "after" }
       );
-
-      console.log("updatedUser", updatedUser);
 
       return utils.responseHandler({
         message: "File deleted successfully",

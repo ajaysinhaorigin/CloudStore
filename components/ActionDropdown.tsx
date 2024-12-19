@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 import { utils } from "@/lib/utils/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Loader } from "@/public/assets";
 
 interface Props {
   file: IDocument;
@@ -36,6 +38,8 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
 
+  const { toast } = useToast();
+
   const closeAllModals = () => {
     setIsModalOpen(false);
     setIsDropdownOpen(false);
@@ -45,7 +49,6 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
   const handleAction = async () => {
     if (!action) return;
     setIsLoading(true);
-    let success = false;
 
     const actions = {
       rename: async () => await utils.renameFile(file._id, name),
@@ -53,13 +56,24 @@ const ActionDropdown = ({ file, fetchFiles }: Props) => {
       delete: async () => await utils.deleteFile(file._id),
     };
 
-    success = await actions[action.value as keyof typeof actions]();
+    const response = await actions[action.value as keyof typeof actions]();
 
-    if (success) {
+    if (response.status !== 200) {
+      setIsLoading(false);
       closeAllModals();
-      fetchFiles && fetchFiles();
+
+      return toast({
+        description: (
+          <p className="body-2 text-white">
+            {response?.message || `Something went wrong`}
+          </p>
+        ),
+        className: "error-toast",
+      });
     }
 
+    closeAllModals();
+    fetchFiles && fetchFiles();
     setIsLoading(false);
   };
 
