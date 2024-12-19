@@ -231,8 +231,9 @@
     @apply flex w-full flex-row justify-between !important;
   }
   .recent-file-name {
-    @apply subtitle-2 line-clamp-1 w-full text-light-100 sm:max-w-[200px] lg:max-w-[250px] !important;
+    @apply subtitle-2 line-clamp-1 xs:line-clamp-6 sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-6 xl:line-clamp-none text-light-100 w-[100px] xs:w-[200px] sm:w-full md:w-[130px] lg:max-w-[180px] xl:w-full;
   }
+
   .recent-file-date {
     @apply body-2 text-light-100/80 !important;
   }

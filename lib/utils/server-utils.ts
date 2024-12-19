@@ -139,8 +139,8 @@ const fetchCurrentUser = async (decodedToken: any) => {
 export const utils = {
   responseHandler,
   generateAccessAndRefreshToken,
-  sendEmailOTP,
   clearCookies,
   verifyJWT,
   fetchCurrentUser,
+  sendEmailOTP
 };

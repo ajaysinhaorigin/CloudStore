@@ -86,6 +86,7 @@ const AuthForm = ({ type }: Props) => {
       setIsLoading(false);
     }
   };
+
   return (
     <>
       <Form {...form}>
