@@ -73,7 +73,7 @@ const OTPModal = ({ email }: Props) => {
 
   const onResendOTP = async () => {
     try {
-      await utils.sendEmailOTP(email);
+    //   await utils.sendEmailOTP(email);
     } catch (error) {
       console.log("Failed to send OTP", error);
     }

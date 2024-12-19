@@ -9,4 +9,6 @@ export const mongodbConfig = {
   cloudinaryCloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
   cloudinaryApiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!,
   cloudinaryApiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET!,
+  gmailUser: process.env.NEXT_PUBLIC_GMAIL_USER!,
+  gmailPassword: process.env.NEXT_PUBLIC_GMAIL_PASS!,
 };
