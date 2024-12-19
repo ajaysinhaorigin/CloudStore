@@ -1,11 +1,9 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model";
-import { Resend } from "resend";
 import EmailTemplate from "@/components/EmailTemplate";
 import { NextResponse } from "next/server";
 import { mongodbConfig } from "../dbConnection/config";
-
-const resend = new Resend("re_VmPswVAn_KYkqhkooStWJ76iCfqoMaJts");
+import nodemailer from "nodemailer";
 
 // utils/responseHelper.js
 export function responseHandler({
@@ -58,19 +56,44 @@ const generateOtp = () => {
   return { otp, expiration };
 };
 
+const htmlContent = (firstName: string, otp: string) => {
+  return `<div>
+            <h1>Welcome, ${firstName}!</h1>
+            <h2>Your Otp is, ${otp}!</h2>
+          </div>`;
+};
+
 const sendEmailOTP = async (email: string) => {
   const { otp, expiration } = generateOtp();
+  console.log("email", email);
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
-      to: ["ajaysinhaa09@gmail.com"],
-      subject: "Hello there, Welcome to Resend!",
-      react: EmailTemplate({ firstName: "John", otp }),
+    // Create a transporter using Gmail
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: mongodbConfig.gmailUser, // Access the private env variable here
+        pass: mongodbConfig.gmailPassword, // Access the private env variable here
+      },
     });
+
+    // Email content
+    const mailOptions = {
+      from: mongodbConfig.gmailUser, // Using environment variable
+      to: email, // Target recipient email
+      subject: "Your OTP Code",
+      text: `Your OTP is ${otp}`, // Plain text content
+      html: htmlContent("John Doe", otp), // HTML content
+    };
+
+    // Send the email
+    const data = await transporter.sendMail(mailOptions);
+
+    console.log("Email sent:", data);
 
     return data ? { otp, expiration } : null;
   } catch (error) {
+    console.error("Error sending email:", error);
     return null;
   }
 };
