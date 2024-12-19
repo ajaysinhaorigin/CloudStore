@@ -3,6 +3,7 @@ export const apiUrls = {
   signup: "/user/sign-up",
   signin: "/user/sign-in",
   verifyEmail: "/user/verify-email",
+  resend: "/user/resend",
   profile: "/user/profile",
   logout: "/user/logout",
   refreshAccessToken: "/user/refresh-token",

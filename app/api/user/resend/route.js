@@ -5,7 +5,6 @@ import connectDB from "../../../../lib/dbConnection";
 export const POST = async (req, _) => {
   try {
     await connectDB();
-
     const { email } = await req.json();
 
     if (!email) {
@@ -29,7 +28,7 @@ export const POST = async (req, _) => {
 
     if (!otpDetails) {
       return utils.responseHandler({
-        message: "Something went wrong while sending OTP",
+        message: "Something went wrong while resending OTP",
         status: 500,
         success: false,
       });
@@ -49,7 +48,7 @@ export const POST = async (req, _) => {
     );
 
     return utils.responseHandler({
-      message: "OTP sent successfully",
+      message: "OTP resent successfully",
       status: 200,
       success: true,
       data: {
