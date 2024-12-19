@@ -72,10 +72,25 @@ const OTPModal = ({ email }: Props) => {
   };
 
   const onResendOTP = async () => {
+    const httpClient = createHttpClient();
+
     try {
-    //   await utils.sendEmailOTP(email);
+      const user = await httpClient.post(apiUrls.resend, {
+        email,
+      });
+
+      if (user.status !== 200) {
+        return toast({
+          description: (
+            <p className="body-2 text-white">
+              {user?.message || `Something went wrong while sending OTP`}
+            </p>
+          ),
+          className: "error-toast",
+        });
+      }
     } catch (error) {
-      console.log("Failed to send OTP", error);
+      console.log("error", error);
     }
   };
 

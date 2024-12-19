@@ -78,7 +78,6 @@ const AuthForm = ({ type }: Props) => {
       }
 
       if (user && user.status === 200) {
-        console.log("user --", user.data.emailVerificationToken);
         setAccountId(user.data.emailVerificationToken);
       }
     } catch (error) {

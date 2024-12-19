@@ -31,7 +31,7 @@ export const POST = async (req) => {
       });
     }
 
-    const otpDetails = await utils.sendEmailOTP(email);
+    const otpDetails = await utils.sendEmailOTP(email, fullName);
 
     if (!otpDetails) {
       return utils.responseHandler({

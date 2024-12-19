@@ -31,7 +31,7 @@ export const calculatePercentage = (sizeInBytes: number) => {
   const totalSizeInBytes = 1 * 1024 * 1024 * 1024; // 2GB in bytes
   const percentage = (sizeInBytes / totalSizeInBytes) * 100;
   return Number(percentage.toFixed(2));
-};  
+};
 
 export const getFileType = (fileName: string) => {
   const extension = fileName.split(".").pop()?.toLowerCase();
@@ -299,9 +299,29 @@ const deleteFile = async (id: string) => {
   }
 };
 
+const sliceFileName = (name: string) => {
+  const width = window.innerWidth;
+  switch (true) {
+    case width < 300: {
+      console.log("name", name);
+      return name.slice(0, 10) + "...";
+    }
+    case width < 400:
+      return name.slice(0, 15) + "...";
+    case width < 600:
+      return name.slice(0, 30) + "...";
+    case width < 900:
+      return name.slice(0, 50) + "...";
+    default:
+      console.log("name", name);
+      return name;
+  }
+};
+
 export const utils = {
   refreshAccessToken,
   renameFile,
   updateFileUsers,
   deleteFile,
+  sliceFileName,
 };
