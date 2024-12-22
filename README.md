@@ -26,7 +26,7 @@ A modern and secure cloud storage application, designed for seamless file manage
   - Built with **Next.js API Routes** and **Mongoose** for scalable and flexible database management.  
   - Cloudinary integration for optimized and secure file storage.  
   - Nodemailer for robust email communication, including OTP verification.  
-  - Efficient middleware setup for file size validation and user-specific storage limits.  
+  - Efficient middleware setup for file size validation and user-specific storage limits 
 
 ## Tech Stack  
 - **Frontend**: Next.js, ShadCN (UI components library)  
